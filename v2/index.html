@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이온도 원리 · V2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:#E9E4E5}
+  body{max-width:480px;margin:0 auto;background:#FBFAFA;font-family:'Pretendard Variable',sans-serif;word-break:keep-all;color:#222;-webkit-font-smoothing:antialiased}
+  .variant-pill{position:fixed;top:10px;left:10px;z-index:50;background:rgba(20,12,15,.82);color:#fff;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 11px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .how{background:#F3F1F1;padding:76px 20px 52px}
+  .eyebrow{font-size:15px;color:#7A6C71;text-align:center;margin-bottom:10px}
+  .how h2{font-size:34px;font-weight:800;text-align:center;line-height:1.3;letter-spacing:-.02em;margin-bottom:34px}
+  .how h2 strong{color:#8E1F3F;font-weight:800}
+  .cards{display:flex;flex-direction:column;gap:22px}
+  .card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(80,20,40,.08)}
+  .fig{position:relative;aspect-ratio:4/3;background:#160F12;overflow:hidden}
+  .fig canvas,.fig svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .fig .chip{position:absolute;left:12px;top:12px;font-size:11px;font-weight:700;color:#FFE6D6;background:rgba(255,255,255,.08);border:1px solid rgba(255,190,150,.28);padding:5px 10px;border-radius:999px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity .5s}
+  .fig .chip.on{opacity:1}
+  .fig .scale{position:absolute;left:12px;top:12px;font-size:10px;font-weight:600;letter-spacing:.14em;color:rgba(255,236,226,.5)}
+  .txt{padding:18px 22px 22px}
+  .step{font-size:11.5px;font-weight:800;color:#8E1F3F;letter-spacing:.12em;margin-bottom:6px}
+  .txt h3{font-size:21px;font-weight:800;margin-bottom:8px;letter-spacing:-.01em}
+  .txt p{font-size:14.5px;color:#333;line-height:1.65}
+  .nbt{font-size:13px;text-align:center;color:#7A6C71;margin-top:28px}
+  .nbt b{color:#8E1F3F}
+  .note{font-size:12px;color:#7A6C71;text-align:center;margin-top:8px;line-height:1.6}
+  .lbl text{font-family:'Pretendard Variable',sans-serif;font-size:25px;font-weight:600;fill:rgba(255,240,234,.86);transition:fill .6s}
+  .lbl line,.lbl polyline{stroke:rgba(255,240,234,.55);stroke-width:1.6;fill:none;transition:stroke .6s}
+  .lbl circle{fill:#fff;stroke:rgba(0,0,0,.35);stroke-width:1.2;transition:fill .6s}
+  .lbl g.hot text{fill:#FFB98C}
+  .lbl g.hot polyline{stroke:rgba(255,170,120,.9)}
+  .lbl g.hot circle{fill:#FFB27A}
+</style>
+</head>
+<body>
+<div class="variant-pill">V2 · 3D 피부 조직 렌더</div>
+
+<section class="how">
+  <p class="eyebrow">오직 마이온도에서 확인할 수 있는</p>
+  <h2>전기 없이 따뜻해지는<br><strong>마이온도의 원리</strong></h2>
+
+  <div class="cards">
+    <article class="card">
+      <div class="fig" data-step="1"><canvas width="960" height="720"></canvas></div>
+      <div class="txt">
+        <div class="step">STEP 01</div>
+        <h3>체온 복사</h3>
+        <p>밴드 안쪽 버건디 도트가 맨살에 닿아, 피부의 온기를 받아들입니다.</p>
+      </div>
+    </article>
+    <article class="card">
+      <div class="fig" data-step="2"><canvas width="960" height="720"></canvas></div>
+      <div class="txt">
+        <div class="step">STEP 02</div>
+        <h3>원적외선 방사</h3>
+        <p>체온을 받은 도트 속 광물 소재가 원적외선과 열에너지를 내보냅니다.</p>
+      </div>
+    </article>
+    <article class="card">
+      <div class="fig" data-step="3"><canvas width="960" height="720"></canvas><span class="chip"></span></div>
+      <div class="txt">
+        <div class="step">STEP 03</div>
+        <h3>심부까지 전해지는 온기</h3>
+        <p>도트에서 나온 원적외선이 피부에 닿아 몸속 깊은 곳까지 온기가 전해지고, 벗은 뒤에도 한동안 남습니다.</p>
+      </div>
+    </article>
+  </div>
+
+  <p class="nbt">약 40여 가지 광물을 융합한 <b>NBT 융복합 기술</b></p>
+  <p class="note">* 원리와 지속 시간은 브랜드 설명이며, 체감 시점과 정도는 사람마다 다릅니다. 일러스트는 이해를 돕기 위한 개념도입니다.</p>
+</section>
+
+<script>
+(function(){
+'use strict';
+var G={"W":960,"H":720,"X0":190,"X1":740,"Y0":300,"Y1":640,"DX":120,"DY":-125,
+  "layers":{"epi":313.4,"pap":347.5,"der":428.0,"fat":560.1},
+  "band":{"u0":421.0,"u1":663.0,"bot":294.0,"top":277.0,"bbox":[418,149,786,303],"sbbox":[404,157,801,319]},
+  "dotsFront":[[443,300],[461,300],[479,300],[497,300],[515,300],[533,300],[551,300],[569,300],[587,300],[605,300],[623,300],[641,300]],
+  "dotsSide":[[770.9,180.3],[758.1,193.6],[745.4,206.9],[732.6,220.2],[719.8,233.5],[707.1,246.8],[694.3,260.1],[681.5,273.4],[668.8,286.7]]};
+var X0=G.X0,X1=G.X1,Y0=G.Y0,Y1=G.Y1,DX=G.DX,DY=G.DY,B=G.band;
+var BCX=(B.u0+B.u1)/2;
+var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- assets ---------- */
+function load(src){return new Promise(function(res){var i=new Image();i.onload=function(){res(i)};i.onerror=function(){res(null)};i.src=src;});}
+function sprite(size,stops){var c=document.createElement('canvas');c.width=c.height=size;var x=c.getContext('2d');
+  var g=x.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);stops.forEach(function(s){g.addColorStop(s[0],s[1])});
+  x.fillStyle=g;x.fillRect(0,0,size,size);return c;}
+var SP_PART=sprite(64,[[0,'rgba(255,232,190,1)'],[.22,'rgba(255,170,90,.8)'],[.6,'rgba(255,110,40,.22)'],[1,'rgba(255,90,20,0)']]);
+var SP_DOT=sprite(128,[[0,'rgba(255,200,150,.8)'],[.18,'rgba(255,120,70,.5)'],[.5,'rgba(210,40,60,.16)'],[1,'rgba(160,20,50,0)']]);
+var SP_WARM=sprite(128,[[0,'rgba(255,170,90,.55)'],[.5,'rgba(255,120,50,.22)'],[1,'rgba(255,90,30,0)']]);
+
+/* ---------- geometry helpers ---------- */
+function polyPath(ctx,p){ctx.beginPath();ctx.moveTo(p[0][0],p[0][1]);for(var i=1;i<p.length;i++)ctx.lineTo(p[i][0],p[i][1]);ctx.closePath();}
+var FRONT=[[X0,Y0],[X1,Y0],[X1,Y1],[X0,Y1]];
+var SIDE=[[X1,Y0],[X1+DX,Y0+DY],[X1+DX,Y1+DY],[X1,Y1]];
+var TOP=[[X0,Y0],[X1,Y0],[X1+DX,Y0+DY],[X0+DX,Y0+DY]];
+var FOOT=[[B.u0,Y0],[B.u1,Y0],[B.u1+DX,Y0+DY],[B.u0+DX,Y0+DY]];
+function clipTissue(ctx){ctx.beginPath();[FRONT,SIDE].forEach(function(p){ctx.moveTo(p[0][0],p[0][1]);for(var i=1;i<p.length;i++)ctx.lineTo(p[i][0],p[i][1]);ctx.closePath();});ctx.clip();}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function ease(t){t=clamp(t,0,1);return t*t*(3-2*t)}
+function rnd(a,b){return a+Math.random()*(b-a)}
+
+/* ---------- labels (SVG overlay) ---------- */
+var LABELS=[["표피",307,307],["진피",388,388],["피하지방",492,492],["근육",600,600]];
+function buildLabels(fig){
+  var ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox',(458-480/1.07).toFixed(2)+' '+(392-360/1.07).toFixed(2)+' '+(960/1.07).toFixed(2)+' '+(720/1.07).toFixed(2));svg.setAttribute('class','lbl');svg.setAttribute('aria-hidden','true');
+  var gs=[];
+  LABELS.forEach(function(l,i){
+    var g=document.createElementNS(ns,'g');
+    var t=document.createElementNS(ns,'text');t.setAttribute('x',30);t.setAttribute('y',l[1]+9);t.textContent=l[0];
+    var tw=l[0].length*25+8;
+    var pl=document.createElementNS(ns,'polyline');pl.setAttribute('points',(30+tw)+','+(l[1])+' '+(X0-6)+','+l[1]+' '+(X0+26)+','+l[2]);
+    var c=document.createElementNS(ns,'circle');c.setAttribute('cx',X0+26);c.setAttribute('cy',l[2]);c.setAttribute('r',4.2);
+    g.appendChild(t);g.appendChild(pl);g.appendChild(c);svg.appendChild(g);gs.push(g);
+  });
+  fig.appendChild(svg);return gs;
+}
+
+/* ---------- scene ---------- */
+function Scene(fig,imgs){
+  this.fig=fig;this.step=+fig.dataset.step;this.cv=fig.querySelector('canvas');this.ctx=this.cv.getContext('2d');
+  this.img=imgs;this.t=0;this.parts=[];this.heat=G.dotsFront.map(function(){return 0});this.heatS=G.dotsSide.map(function(){return 0});
+  this.labels=buildLabels(fig);this.chip=fig.querySelector('.chip');this.chipText='';
+}
+Scene.prototype.drawBase=function(haze){
+  var c=this.ctx,b=this.img.block;
+  c.globalCompositeOperation='source-over';c.globalAlpha=1;
+  c.drawImage(b,0,0);
+  if(haze>0){ // heat-haze: displace thin strips of the tissue under the band
+    var x0=B.u0-70,w=(B.u1-B.u0)+140,t=this.t;
+    for(var y=Y0+2;y<Y0+300;y+=4){
+      var f=1-(y-Y0)/300, off=haze*(1.7*f+.3)*Math.sin(y*.11-t*5.2)+haze*.6*f*Math.sin(y*.037+t*2.3);
+      c.drawImage(b,x0,y,w,4,x0+off,y,w,4);
+    }
+  }
+};
+Scene.prototype.drawBand=function(lift,alpha){
+  var c=this.ctx,im=this.img;
+  c.globalCompositeOperation='source-over';
+  // contact shadow (spreads & fades as the band lifts)
+  c.globalAlpha=alpha*(1-.85*lift);
+  var sb=B.sbbox,sp=lift*14;
+  c.drawImage(im.shadow,sb[0]-sp,sb[1]-sp*.4,(sb[2]-sb[0])+sp*2,(sb[3]-sb[1])+sp*.8);
+  c.globalAlpha=alpha;
+  var bb=B.bbox;c.drawImage(im.band,bb[0],bb[1]-lift*78);
+  c.globalAlpha=1;
+};
+Scene.prototype.dotGlow=function(heatArr,dots,lift,alpha,pulse){
+  var c=this.ctx;c.globalCompositeOperation='lighter';
+  for(var i=0;i<dots.length;i++){
+    var h=heatArr[i]*alpha;if(h<=.01)continue;
+    var p=pulse?pulse(i):1, x=dots[i][0], y=dots[i][1]-4-lift*78, s=(18+22*h)*p;
+    c.globalAlpha=clamp(h*.8,0,1);c.drawImage(SP_DOT,x-s,y-s,s*2,s*2);
+    c.globalAlpha=clamp(h*.75,0,1);c.fillStyle='rgba(255,150,110,1)';
+    c.beginPath();c.ellipse(x-.5,y+1.5,4.6,2.8,0,0,Math.PI*2);c.fill();
+  }
+  c.globalAlpha=1;c.globalCompositeOperation='source-over';
+};
+
+/* STEP 01 — body warmth rises into the dots */
+Scene.prototype.step1=function(dt){
+  var c=this.ctx,T=7.5,ph=this.t%T,self=this;
+  this.drawBase(0);
+  // skin surface warmth (body heat)
+  c.save();clipTissue(c);c.globalCompositeOperation='screen';
+  var g=c.createLinearGradient(0,Y0,0,Y0+120);
+  var w=.20+.06*Math.sin(this.t*2.2);
+  g.addColorStop(0,'rgba(255,150,80,'+w+')');g.addColorStop(1,'rgba(255,120,60,0)');
+  c.fillStyle=g;c.fillRect(X0,Y0,X1+DX-X0,130);c.restore();
+  this.drawBand(0,1);
+  // spawn particles
+  var fade=ph>T-.8?(T-ph)/.8:1, rate=ph<T-1.2?34:0;
+  this.acc=(this.acc||0)+dt*rate;
+  while(this.acc>1){this.acc-=1;
+    if(Math.random()<.78){var k=Math.floor(Math.random()*G.dotsFront.length),d=G.dotsFront[k];
+      this.parts.push({x:d[0]+rnd(-55,55),y:rnd(Y0+14,Y0+150),tx:d[0],ty:d[1]-2,k:k,side:0,v:rnd(26,48),s:rnd(5,11),ph:rnd(0,6.3),life:0});}
+    else{var k2=Math.floor(Math.random()*G.dotsSide.length),d2=G.dotsSide[k2];
+      this.parts.push({x:d2[0]+rnd(4,40),y:d2[1]+rnd(14,110),tx:d2[0],ty:d2[1]-2,k:k2,side:1,v:rnd(24,40),s:rnd(4,9),ph:rnd(0,6.3),life:0});}
+  }
+  c.globalCompositeOperation='lighter';
+  var keep=[];
+  for(var i=0;i<this.parts.length;i++){var p=this.parts[i];p.life+=dt;
+    var dy=p.ty-p.y, dx=p.tx-p.x, dist=Math.sqrt(dx*dx+dy*dy);
+    var sp=p.v*(1+1.4*clamp(1-dist/120,0,1));
+    p.y+= -sp*dt; p.x+= dx*clamp(dt*(1.2+60/(dist+20)),0,1)*.6 + Math.sin(p.life*3+p.ph)*.25;
+    if(p.y<=p.ty+1){ if(p.side)this.heatS[p.k]=Math.min(1,this.heatS[p.k]+.07); else this.heat[p.k]=Math.min(1,this.heat[p.k]+.06); continue;}
+    var a=clamp(p.life/.5,0,1)*fade*.9, s=p.s*(.7+.3*clamp(dist/100,0,1));
+    c.globalAlpha=a;c.drawImage(SP_PART,p.x-s*2,p.y-s*2,s*4,s*4);
+    keep.push(p);
+  }
+  this.parts=keep;c.globalAlpha=1;c.globalCompositeOperation='source-over';
+  // heat decay / loop reset
+  var dec=ph>T-1.2?1.4:.05;
+  for(i=0;i<this.heat.length;i++)this.heat[i]=Math.max(0,this.heat[i]-dec*dt);
+  for(i=0;i<this.heatS.length;i++)this.heatS[i]=Math.max(0,this.heatS[i]-dec*dt);
+  var fl=function(i){return 1+.08*Math.sin(self.t*7+i*1.7)};
+  this.dotGlow(this.heatS,G.dotsSide,0,.55,fl);
+  this.dotGlow(this.heat,G.dotsFront,0,1,fl);
+  // underside line glow
+  var avg=this.heat.reduce(function(a,b){return a+b},0)/this.heat.length;
+  this.underGlow(avg,0,1);
+};
+Scene.prototype.underGlow=function(h,lift,alpha){
+  if(h<=.02)return;var c=this.ctx;c.globalCompositeOperation='lighter';
+  var y=Y0-5-lift*78;
+  var g=c.createLinearGradient(B.u0,0,B.u1,0);
+  g.addColorStop(0,'rgba(255,90,60,0)');g.addColorStop(.15,'rgba(255,110,70,'+(.22*h*alpha)+')');g.addColorStop(.85,'rgba(255,110,70,'+(.22*h*alpha)+')');g.addColorStop(1,'rgba(255,90,60,0)');
+  c.fillStyle=g;c.fillRect(B.u0,y-3,B.u1-B.u0,7);
+  c.globalCompositeOperation='source-over';
+};
+
+/* wavefront: envelope of circles from the front dots */
+Scene.prototype.wave=function(r,alpha,width){
+  var c=this.ctx,ds=G.dotsFront,first=ds[0][0],last=ds[ds.length-1][0];
+  c.beginPath();var started=false;
+  for(var x=X0;x<=X1+DX;x+=6){
+    var nx=x<first?first:(x>last?last:x), ddx=x-nx, yy;
+    // nearest-dot envelope: within the dot span add small scallops
+    var sc=0; if(x>=first&&x<=last){var m=((x-first)%18)-9; sc=-Math.sqrt(Math.max(0,81-m*m))*clamp(1-r/140,0,1)*.6;}
+    var q=r*r-ddx*ddx; if(q<0){ if(started)break; else continue;}
+    yy=Y0+Math.sqrt(q)+sc;
+    if(x>X1){yy+=(x-X1)*DY/DX;} // wrap onto side face
+    if(!started){c.moveTo(x,yy);started=true;}else c.lineTo(x,yy);
+  }
+  c.strokeStyle='rgba(255,170,130,'+alpha+')';c.lineWidth=width;c.stroke();
+};
+
+/* STEP 02 — dots pulse, far-infrared waves radiate down */
+Scene.prototype.step2=function(dt){
+  var c=this.ctx,t=this.t,self=this;
+  var on=ease(t/1.2);
+  this.drawBase(1.15*on);
+  // faint radiating glow into tissue
+  c.save();clipTissue(c);c.globalCompositeOperation='screen';
+  c.translate(BCX,Y0);c.scale(1.6,1);
+  var rg=c.createRadialGradient(0,0,0,0,0,170);
+  var pu=.5+.5*Math.sin(t*3.2);
+  rg.addColorStop(0,'rgba(255,140,90,'+(.30+.08*pu)*on+')');rg.addColorStop(.6,'rgba(255,100,70,'+.10*on+')');rg.addColorStop(1,'rgba(255,90,60,0)');
+  c.fillStyle=rg;c.beginPath();c.arc(0,0,170,0,Math.PI*2);c.fill();c.restore();
+  // waves
+  c.save();clipTissue(c);c.globalCompositeOperation='lighter';
+  var period=1.05,speed=95;
+  for(var k=0;k<6;k++){
+    var age=((t/period)+k)%6*period; var r=12+age*speed;
+    var a=clamp(1-r/330,0,1)*clamp(age/.25,0,1)*on;
+    if(a<=0)continue;
+    this.wave(r,.30*a,9);this.wave(r,.38*a,4);this.wave(r,.8*a,1.4);
+  }
+  c.restore();
+  this.drawBand(0,1);
+  for(var i=0;i<this.heat.length;i++)this.heat[i]=on;
+  for(i=0;i<this.heatS.length;i++)this.heatS[i]=on*.9;
+  var pf=function(i){return .85+.3*(.5+.5*Math.sin(t*3.2*1.0-i*.35))};
+  this.dotGlow(this.heatS,G.dotsSide,0,.55,pf);
+  this.dotGlow(this.heat,G.dotsFront,0,1,pf);
+  this.underGlow(on*(.8+.2*pu),0,1);
+};
+
+/* STEP 03 — warmth propagates deep, band lifts, warmth lingers */
+Scene.prototype.step3=function(dt){
+  var c=this.ctx,T=11,ph=this.t%T,t=this.t;
+  // timeline
+  var descend=ease(ph/4.2);                       // 0-4.2s front travels down
+  var lift=ease((ph-5.0)/1.6);                    // 5.0-6.6s band lifts
+  var bandA=1-ease((ph-5.6)/1.2);                 // fades out
+  var back=ease((ph-(T-.9))/.9);                  // loop: band returns
+  if(ph>T-.9){lift=1-back;bandA=back;}
+  var linger=ph>6.6&&ph<T-.9;
+  var outF=1-ease((ph-(T-1.4))/1.2);              // warmth fades at loop end
+  var inF=ease(ph/.6);
+  var frontY=Y0+descend*(Y1-Y0+40);
+  this.drawBase(0);
+  // volumetric warm bloom inside tissue
+  c.save();clipTissue(c);c.globalCompositeOperation='screen';
+  var ry=Math.max(10,frontY-Y0), rx=ry*1.55+120;
+  c.translate(BCX+20,Y0);c.scale(rx/ry,1);
+  var rg=c.createRadialGradient(0,0,0,0,0,ry);
+  var breathe=.88+.12*Math.sin(t*1.8), I=inF*outF*breathe;
+  var core=linger?.30:.48;
+  rg.addColorStop(0,'rgba(255,175,100,'+(core*I)+')');
+  rg.addColorStop(.55,'rgba(255,130,60,'+(.30*I)+')');
+  rg.addColorStop(.86,'rgba(255,150,70,'+(.40*I)+')');
+  rg.addColorStop(.95,'rgba(255,190,120,'+(.50*I*(linger?.55:1))+')');
+  rg.addColorStop(1,'rgba(255,120,50,0)');
+  c.fillStyle=rg;c.beginPath();c.arc(0,0,ry,0,Math.PI*2);c.fill();c.restore();
+  // deep lingering glow (fat + muscle) after removal
+  var deep=(ph>3.2?ease((ph-3.2)/1.5):0)*outF;
+  if(deep>0){
+    c.save();clipTissue(c);c.globalCompositeOperation='lighter';
+    var lg=c.createLinearGradient(0,G.layers.der-30,0,Y1);
+    var dA=deep*(linger?.21:.14)*breathe;
+    lg.addColorStop(0,'rgba(255,120,40,0)');lg.addColorStop(.35,'rgba(255,125,45,'+dA+')');lg.addColorStop(1,'rgba(255,80,30,'+dA*.95+')');
+    c.fillStyle=lg;c.fillRect(X0,G.layers.der-30,X1+DX-X0,Y1-G.layers.der+30);
+    c.restore();
+  }
+  // ember sparks drifting downward along the front (subtle)
+  this.acc=(this.acc||0)+dt*(ph<4.4?26:(linger?8:0));
+  while(this.acc>1){this.acc-=1;var yS=linger?rnd(G.layers.der,Y1-10):rnd(Y0+10,Math.max(Y0+20,frontY));
+    this.parts.push({x:BCX+rnd(-260,240),y:yS,v:rnd(6,16),s:rnd(3,7),life:0,max:rnd(1.2,2.4)});}
+  c.save();clipTissue(c);c.globalCompositeOperation='lighter';
+  var keep=[];
+  for(var i=0;i<this.parts.length;i++){var p=this.parts[i];p.life+=dt;if(p.life>p.max)continue;
+    p.y+=p.v*dt;var a=Math.sin(Math.PI*p.life/p.max)*.55*outF;
+    c.globalAlpha=a;c.drawImage(SP_PART,p.x-p.s*2,p.y-p.s*2,p.s*4,p.s*4);keep.push(p);}
+  this.parts=keep;c.restore();c.globalAlpha=1;
+  // residual warmth on the skin footprint
+  var skinW=(lift>0?.75:clamp(descend*2,0,1))*outF;
+  if(skinW>0){
+    c.save();polyPath(c,TOP);c.clip();c.globalCompositeOperation='source-over';
+    c.globalAlpha=skinW*(.5+.1*Math.sin(t*1.8));
+    polyPath(c,FOOT);
+    var fg=c.createLinearGradient(B.u0,0,B.u1+DX,0);
+    fg.addColorStop(0,'rgba(255,110,60,.22)');fg.addColorStop(.5,'rgba(255,120,60,.38)');fg.addColorStop(1,'rgba(255,110,60,.22)');
+    c.fillStyle=fg;c.fill();c.restore();c.globalAlpha=1;
+  }
+  // band + dots
+  if(bandA>0.01){
+    this.drawBand(lift,bandA);
+    var hv=(ph<5?1:1-ease((ph-5)/1.2));if(ph>T-.9)hv=0;
+    for(i=0;i<this.heat.length;i++)this.heat[i]=hv*(.85+.15*Math.sin(t*3+i*.4));
+    for(i=0;i<this.heatS.length;i++)this.heatS[i]=hv*.8;
+    this.dotGlow(this.heatS,G.dotsSide,lift,bandA*.55,null);
+    this.dotGlow(this.heat,G.dotsFront,lift,bandA,null);
+    this.underGlow(hv,lift,bandA);
+  }
+  // labels + chip
+  var reach=[Y0+6,G.layers.epi+30,G.layers.der+40,G.layers.fat+30];
+  for(i=0;i<this.labels.length;i++){
+    var hot=(frontY>reach[i])&&outF>.5;
+    if(linger&&i<2)hot=false;
+    this.labels[i].classList.toggle('hot',hot);
+  }
+  var txt=ph<5?'착용 중':(ph<T-1.2?'벗은 뒤에도':'');
+  if(txt!==this.chipText){this.chipText=txt;if(txt){this.chip.textContent=txt;this.chip.classList.add('on');}else this.chip.classList.remove('on');}
+};
+var ZK=1.07,ZX=458,ZY=392;
+Scene.prototype.frame=function(dt){
+  this.t+=dt;
+  var c=this.ctx;c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.globalCompositeOperation='source-over';c.fillStyle='#130D0F';c.fillRect(0,0,960,720);
+  c.setTransform(ZK,0,0,ZK,480-ZK*ZX,360-ZK*ZY);
+  this['step'+this.step](dt);
+};
+Scene.prototype.still=function(){
+  // a representative static state for reduced motion
+  var s=this.step;
+  if(s===1){this.t=0;for(var i=0;i<140;i++)this.frame(1/30);}
+  else if(s===2){this.t=0;for(var j=0;j<70;j++)this.frame(1/30);}
+  else{this.t=8.0;this.parts=[];this.frame(0);}
+};
+
+/* ---------- boot ---------- */
+Promise.all([load('../img/v2_block.jpg'),load('../img/v2_band.png'),load('../img/v2_bandshadow.png')]).then(function(r){
+  var imgs={block:r[0],band:r[1],shadow:r[2]};
+  var scenes=[].map.call(document.querySelectorAll('.fig'),function(f){return new Scene(f,imgs)});
+  scenes.forEach(function(s){s.t=0;s.frame(0.001);});
+  if(REDUCED){scenes.forEach(function(s){s.still()});return;}
+  var vis=new Set(),raf=0,last=0;
+  function loop(now){
+    var dt=last?Math.min(.05,(now-last)/1000):.016;last=now;
+    vis.forEach(function(s){s.frame(dt)});
+    raf=vis.size?requestAnimationFrame(loop):0;if(!raf)last=0;
+  }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){var s=scenes[[].indexOf.call(document.querySelectorAll('.fig'),e.target)];
+      if(e.isIntersecting)vis.add(s);else vis.delete(s);});
+    if(vis.size&&!raf){last=0;raf=requestAnimationFrame(loop);}
+  },{threshold:.15});
+  scenes.forEach(function(s){io.observe(s.fig)});
+  window.__v2=scenes;
+});
+})();
+</script>
+</body>
+</html>

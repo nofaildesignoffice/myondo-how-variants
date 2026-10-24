@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>마이온도 원리 · V3</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:#E9E4E5}
+  body{max-width:480px;margin:0 auto;background:#FBFAFA;font-family:'Pretendard Variable',sans-serif;word-break:keep-all;color:#222;-webkit-font-smoothing:antialiased}
+  .variant-pill{position:fixed;top:10px;left:10px;z-index:50;background:rgba(20,12,16,.82);color:#fff;font-size:11px;font-weight:700;padding:6px 11px;border-radius:999px;letter-spacing:.02em;backdrop-filter:blur(6px)}
+  .how{background:#F3F1F1;padding:76px 20px 52px}
+  .how .eyebrow{font-size:15px;color:#7A6C71;text-align:center;margin-bottom:10px}
+  .how h2{font-size:34px;font-weight:800;text-align:center;line-height:1.3;letter-spacing:-.02em;margin-bottom:34px}
+  .how h2 strong{color:#8E1F3F;font-weight:800}
+  .cards{display:flex;flex-direction:column;gap:22px}
+  .card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(80,20,40,.08)}
+  .fig{position:relative;aspect-ratio:4/3;background:#140d10;overflow:hidden}
+  .fig canvas{display:block;width:100%;height:100%}
+  .txt{padding:18px 22px 22px}
+  .step{font-size:11.5px;font-weight:800;color:#8E1F3F;letter-spacing:.12em;margin-bottom:6px}
+  .txt h3{font-size:21px;font-weight:800;margin-bottom:8px;letter-spacing:-.01em}
+  .txt p{font-size:14.5px;color:#333;line-height:1.65}
+  .tech{margin-top:30px;font-size:13px;text-align:center;color:#7A6C71}
+  .tech b{color:#8E1F3F}
+  .note{margin-top:10px;font-size:12px;color:#7A6C71;line-height:1.6;text-align:center}
+</style>
+</head>
+<body>
+<div class="variant-pill">V3 · 허리 단면(축단면)</div>
+
+<section class="how">
+  <p class="eyebrow">오직 마이온도에서 확인할 수 있는</p>
+  <h2>전기 없이 따뜻해지는<br><strong>마이온도의 원리</strong></h2>
+  <div class="cards">
+    <article class="card">
+      <div class="fig"><canvas data-step="1" aria-label="허리 단면에서 피부의 온기가 밴드 안쪽 도트로 옮겨가는 모습"></canvas></div>
+      <div class="txt"><div class="step">STEP 01</div><h3>체온 복사</h3><p>밴드 안쪽 버건디 도트가 맨살에 닿아, 피부의 온기를 받아들입니다.</p></div>
+    </article>
+    <article class="card">
+      <div class="fig"><canvas data-step="2" aria-label="도트에서 원적외선 파동이 몸 안쪽으로 퍼지는 모습"></canvas></div>
+      <div class="txt"><div class="step">STEP 02</div><h3>원적외선 방사</h3><p>체온을 받은 도트 속 광물 소재가 원적외선과 열에너지를 내보냅니다.</p></div>
+    </article>
+    <article class="card">
+      <div class="fig"><canvas data-step="3" aria-label="온기가 피부에서 심부까지 전해지고 밴드를 벗은 뒤에도 남는 모습"></canvas></div>
+      <div class="txt"><div class="step">STEP 03</div><h3>심부까지 전해지는 온기</h3><p>도트에서 나온 원적외선이 피부에 닿아 몸속 깊은 곳까지 온기가 전해지고, 벗은 뒤에도 한동안 남습니다.</p></div>
+    </article>
+  </div>
+  <p class="tech">약 40여 가지 광물을 융합한 <b>NBT 융복합 기술</b></p>
+  <p class="note">* 원리와 지속 시간은 브랜드 설명이며, 체감 시점과 정도는 사람마다 다릅니다. 일러스트는 이해를 돕기 위한 개념도입니다.</p>
+</section>
+
+<script>
+(function(){
+'use strict';
+const W=440,H=330,CX=220,CY=156,A=146,B=97;
+const S=2;               // base render scale
+const TAU=Math.PI*2;
+const BAND_IN=1.7,BAND_OUT=11.5,BAND_SIDE=20,BODY_SIDE=17;
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- math / noise ---------- */
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const sstep=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const lerp=(a,b,t)=>a+(b-a)*t;
+function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=TAU;while(d<-Math.PI)d+=TAU;return d;}
+function hash(x,y){let h=(x*374761393+y*668265263)|0;h=Math.imul(h^(h>>>13),1274126177);h^=h>>>16;return (h>>>0)/4294967295;}
+function vnoise(x,y){const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;
+  const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+  const a=hash(xi,yi),b=hash(xi+1,yi),c=hash(xi,yi+1),d=hash(xi+1,yi+1);
+  return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v;}
+function fbm(x,y,o){let s=0,a=.5,f=1,n=0;for(let i=0;i<(o||4);i++){s+=a*vnoise(x*f+i*17.3,y*f-i*9.1);n+=a;a*=.5;f*=2.03;}return s/n;}
+function worley(x,y,seed){const xi=Math.floor(x),yi=Math.floor(y);let f1=9,f2=9,id=0;
+  for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const cx=xi+i,cy=yi+j;
+    const px=cx+hash(cx+seed,cy)*.9+.05,py=cy+hash(cx,cy+seed*3)*.9+.05;
+    const dx=px-x,dy=py-y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<f1){f2=f1;f1=d;id=hash(cx*7+seed,cy*13);}else if(d<f2)f2=d;}
+  return [f1,f2,id];}
+
+/* ---------- torso geometry ---------- */
+const NT=4096,RT=new Float32Array(NT+1);
+for(let i=0;i<=NT;i++){const th=i/NT*TAU-Math.PI,c=Math.cos(th),s=Math.sin(th);
+  const n=2.15+0.55*Math.max(0,s)+0.15*Math.max(0,-s);
+  let r=Math.pow(Math.pow(Math.abs(c)/A,n)+Math.pow(Math.abs(s)/B,n),-1/n);
+  r-=4.6*Math.exp(-Math.pow(angDiff(th,Math.PI/2)/0.11,2));
+  r-=1.6*Math.exp(-Math.pow(angDiff(th,-Math.PI/2)/0.05,2)); // linea alba groove
+  RT[i]=r;}
+function R(th){let u=(th+Math.PI)/TAU;u-=Math.floor(u);const f=u*NT,i=f|0;return RT[i]+(RT[i+1]-RT[i])*(f-i);}
+const fatT=th=>{const s=Math.sin(th),c=Math.cos(th);return 9+9*Math.max(0,-s)+4*c*c;};
+const wallT=th=>{const s=Math.sin(th);let m=8.2;const da=Math.abs(angDiff(th,-Math.PI/2));m+=3.6*(1-sstep(.35,.62,da));m*=1-0.78*sstep(.3,.72,s);return m;};
+const SKIN=3.2;
+function pathR(ctx,off,dy,scale){ctx.beginPath();const N=240;for(let i=0;i<=N;i++){const th=i/N*TAU-Math.PI;const r=(R(th)+off)*(scale||1);const x=CX+Math.cos(th)*r,y=CY+Math.sin(th)*r+(dy||0);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.closePath();}
+function sdEll(px,py,cx,cy,rx,ry,rot){let x=px-cx,y=py-cy;if(rot){const c=Math.cos(rot),s=Math.sin(rot);const nx=c*x+s*y,ny=-s*x+c*y;x=nx;y=ny;}return (Math.hypot(x/rx,y/ry)-1)*Math.min(rx,ry);}
+function sdBox(px,py,cx,cy,hx,hy,rot){let x=px-cx,y=py-cy;if(rot){const c=Math.cos(rot),s=Math.sin(rot);const nx=c*x+s*y,ny=-s*x+c*y;x=nx;y=ny;}const dx=Math.abs(x)-hx,dy=Math.abs(y)-hy;return Math.hypot(Math.max(dx,0),Math.max(dy,0))+Math.min(Math.max(dx,dy),0);}
+function boneSDF(x,y){
+  let d=Math.hypot(x-CX,y-(CY+26))-16;                         // vertebral body
+  const ca=Math.hypot(x-CX,y-(CY+50));
+  if(y>CY+40)d=Math.min(d,Math.abs(ca-8.6)-2.6);                 // arch
+  d=Math.min(d,sdBox(x,y,CX-9.5,CY+41,3,6,0),sdBox(x,y,CX+9.5,CY+41,3,6,0));
+  d=Math.min(d,sdBox(x,y,CX,CY+67,2.5,11,0)-0.6);                // spinous
+  d=Math.min(d,sdBox(x,y,CX-21,CY+45.5,11,2.4,-.22)-0.5,sdBox(x,y,CX+21,CY+45.5,11,2.4,.22)-0.5); // transverse
+  return d;}
+function backMuscle(x,y){
+  const e=Math.min(sdEll(x,y,CX-28,CY+63,22,15.5,.22),sdEll(x,y,CX+28,CY+63,22,15.5,-.22));
+  const p=Math.min(sdEll(x,y,CX-32,CY+24,13.5,11,.15),sdEll(x,y,CX+32,CY+24,13.5,11,-.15));
+  const q=Math.min(sdEll(x,y,CX-57,CY+51,15,8.5,.55),sdEll(x,y,CX+57,CY+51,15,8.5,-.55));
+  return Math.min(e,p,q);}
+
+/* ---------- build base layers ---------- */
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
+let BASE=null;
+function buildBase(){
+  const bw=W*S,bh=H*S;
+  const face=mk(bw,bh),fctx=face.getContext('2d');
+  const img=fctx.createImageData(bw,bh),D=img.data;
+  const masks=[new Uint8ClampedArray(W*H),new Uint8ClampedArray(W*H),new Uint8ClampedArray(W*H),new Uint8ClampedArray(W*H)];
+  const bandImg=fctx.createImageData(bw,bh),BD=bandImg.data;
+  const x0=Math.floor((CX-A-16)*S),x1=Math.ceil((CX+A+16)*S),y0=Math.floor((CY-B-16)*S),y1=Math.ceil((CY+B+16)*S);
+  for(let py=y0;py<y1;py++)for(let px=x0;px<x1;px++){
+    const x=(px+.5)/S,y=(py+.5)/S,dx=x-CX,dy=y-CY,dist=Math.hypot(dx,dy),th=Math.atan2(dy,dx);
+    const Rb=R(th),d=Rb-dist,o=(py*bw+px)*4;
+    const arc=th*Rb;
+    /* band cut face */
+    const e=-d;
+    if(e>BAND_IN-0.6&&e<BAND_OUT+0.6){
+      const aa=clamp((e-BAND_IN+0.5)*S,0,1)*clamp((BAND_OUT-e+0.5)*S,0,1);
+      let r,g,b;
+      if(e<2.8){const w=0.5+0.5*Math.sin(arc*3.1)*Math.sin(e*9);r=g=b=36+w*14;g-=2;}
+      else if(e>BAND_OUT-1.3){const w=0.5+0.5*Math.sin(arc*2.6+e*4);r=g=b=34+w*12;}
+      else{const n=fbm(x*1.9,y*1.9,3),c=worley(x*1.6,y*1.6,3)[0];r=g=b=14+n*14+(c<.22?8:0);}
+      const lt=1+0.18*(-dx/A-dy/B)*0.5;r*=lt;g*=lt;b*=lt*1.04;
+      BD[o]=r;BD[o+1]=g;BD[o+2]=b;BD[o+3]=aa*255;
+    }
+    if(d<-0.6)continue;
+    const alpha=clamp((d+0.5/S)*S,0,1);
+    let r,g,b,layer=-1;
+    const fe=SKIN+fatT(th),we=fe+wallT(th);
+    if(d<SKIN){layer=0;
+      const n=fbm(x*1.3,y*1.3,3);
+      if(d<0.9){r=196;g=128;b=110;}else{r=234;g=182;b=160;}
+      r+= (n-.5)*16;g+=(n-.5)*14;b+=(n-.5)*12;
+      if(d>SKIN-0.6){r-=18;g-=14;b-=8;}
+    }else if(d<fe){layer=1;
+      const [f1,f2]=worley(x*0.3,y*0.3,1);const sep=f2-f1;const n=fbm(x*.9,y*.9,3);
+      const lob=sstep(0,.09,sep);
+      r=lerp(226,243,lob)+(n-.5)*12;g=lerp(170,204,lob)+(n-.5)*14-f1*20;b=lerp(140,118,lob)-f1*26;
+      const ao=sstep(fe-3,fe,d)*0.12+(1-sstep(SKIN,SKIN+2,d))*0.06;r*=1-ao;g*=1-ao;b*=1-ao;
+      if(d<SKIN+0.7){r-=12;g-=20;b-=6;}
+    }else{
+      const bs=boneSDF(x,y);
+      if(bs<0){layer=2;
+        const ca=Math.hypot(x-CX,y-(CY+50));
+        const [f1]=worley(x*0.9,y*0.9,7);const n=fbm(x*1.5,y*1.5,3);
+        if(bs>-1.5){r=242;g=234;b=216;r-=n*10;g-=n*10;b-=n*12;}
+        else{r=224;g=200;b=164;if(f1<.3){r=196;g=140;b=112;}r+=(n-.5)*18;g+=(n-.5)*18;b+=(n-.5)*14;}
+      }else if(Math.hypot(x-CX,y-(CY+50))<6){layer=2;
+        const cr=Math.hypot(x-CX,y-(CY+50));
+        if(cr>5){r=204;g=170;b=160;}else{const n=fbm(x*2,y*2,2);r=236-n*12;g=222-n*12;b=200-n*10;}
+      }else{
+        const bm=backMuscle(x,y);
+        if(bm<0||d<we){layer=2;
+          const bmIn=bm<0;
+          let along,across;
+          if(bmIn){const [f1,f2]=worley(x*0.38,y*0.38,11);const sep=sstep(0.02,.12,f2-f1);const n=fbm(x*2.2,y*2.2,3);const [h1,h2]=worley(x*1.3,y*1.3,4);const s2=sstep(0,.12,h2-h1);
+            r=lerp(196,lerp(118,170,s2),sep)+(n-.5)*30;g=lerp(120,lerp(26,44,s2),sep)+(n-.5)*10;b=lerp(112,lerp(34,50,s2),sep)+(n-.5)*10;
+            if(bm>-0.9){r=lerp(r,214,.55);g=lerp(g,170,.55);b=lerp(b,160,.55);}
+          }else{
+            along=arc;across=d-fe;const wt=wallT(th);
+            const n=fbm(along*0.12,across*1.4,4);const st=0.5+0.5*Math.sin(along*0.9+n*7);
+            r=150+st*34+(n-.5)*24;g=34+st*12;b=42+st*10;
+            // fascia between oblique layers, linea alba, borders
+            const la=Math.abs(angDiff(th,-Math.PI/2))*Rb;
+            const lateral=Math.abs(Math.cos(th));
+            let fas=0;
+            if(la<1.1)fas=1;
+            if(lateral>0.45&&wt>4){const f=across/wt;if(Math.abs(f-.36)<.06||Math.abs(f-.68)<.06)fas=.85;}
+            if(across<0.6||across>wt-0.6)fas=Math.max(fas,.7);
+            if(fas){r=lerp(r,226,fas*.8);g=lerp(g,190,fas*.8);b=lerp(b,178,fas*.8);}
+          }
+        }else{
+          // interior: fascia line, core or retroperitoneal fat
+          const nb=(fbm(x*.08,y*.08,2)-.5)*14;
+          const cs=sdEll(x,y,CX,CY-12,A-36,66,0)+nb;
+          if(d<we+0.8){layer=2;r=228;g=196;b=180;}
+          else if(cs<0){layer=3;
+            const n=fbm(x*.35,y*.35,4),n2=fbm(x*1.6+3,y*1.6,3);
+            const [f1,f2]=worley(x*.09,y*.09,21);const sep=0.55+0.45*sstep(0,.3,f2-f1);
+            r=212+n*30+(n2-.5)*10-(1-sep)*16;g=128+n*30+(n2-.5)*10-(1-sep)*14;b=118+n*22-(1-sep)*8;
+            if(cs>-1.0){r=lerp(r,232,.55);g=lerp(g,196,.55);b=lerp(b,180,.55);}
+          }else{layer=1;
+            const [f1,f2]=worley(x*0.32,y*0.32,5);const sep=f2-f1;const n=fbm(x,y,3);
+            const lob=sstep(0,.09,sep);
+            r=lerp(222,236,lob)+(n-.5)*12;g=lerp(160,186,lob)+(n-.5)*14-f1*18;b=lerp(128,100,lob)-f1*20;
+            const ao=0.10*(1-sstep(0,6,-cs))+0.08*(1-sstep(we,we+4,d));r*=1-ao;g*=1-ao;b*=1-ao;
+          }
+        }
+      }
+    }
+    // lighting: soft top-left key + rim falloff
+    const lt=0.93+0.10*(-dx/A*0.6-dy/B*0.8)*0.5-0.06*sstep(.5,1,dist/Rb)*0;
+    const g2=(hash(px,py)-.5)*5;
+    D[o]=clamp(r*lt+g2,0,255);D[o+1]=clamp(g*lt+g2,0,255);D[o+2]=clamp(b*lt+g2,0,255);D[o+3]=alpha*255;
+    if(layer>=0&&(px%S===0)&&(py%S===0)){masks[layer][(py/S)*W+(px/S)]=alpha*255;}
+  }
+  fctx.putImageData(img,0,0);
+  // subtle wet specular on cut face
+  fctx.save();fctx.scale(S,S);fctx.globalCompositeOperation='source-atop';
+  let gr=fctx.createRadialGradient(CX-60,CY-50,4,CX-60,CY-50,120);
+  gr.addColorStop(0,'rgba(255,248,240,.16)');gr.addColorStop(1,'rgba(255,248,240,0)');
+  fctx.fillStyle=gr;fctx.fillRect(0,0,W,H);
+  gr=fctx.createRadialGradient(CX+40,CY+60,10,CX,CY,190);
+  gr.addColorStop(0,'rgba(40,10,20,0)');gr.addColorStop(1,'rgba(40,10,20,.14)');
+  fctx.fillStyle=gr;fctx.fillRect(0,0,W,H);
+  fctx.restore();
+
+  /* body canvas: background + floor shadow + side wall + face */
+  const body=mk(bw,bh),b=body.getContext('2d');b.scale(S,S);
+  let bg=b.createRadialGradient(CX,CY-10,30,CX,CY,330);
+  bg.addColorStop(0,'#3a2730');bg.addColorStop(.55,'#21151b');bg.addColorStop(1,'#0e090c');
+  b.fillStyle=bg;b.fillRect(0,0,W,H);
+  // floor shadow
+  b.save();b.translate(CX,CY+BODY_SIDE+14);b.scale(1,.42);
+  const sh=b.createRadialGradient(0,0,40,0,0,A+40);sh.addColorStop(0,'rgba(0,0,0,.55)');sh.addColorStop(1,'rgba(0,0,0,0)');
+  b.fillStyle=sh;b.beginPath();b.arc(0,0,A+40,0,TAU);b.fill();b.restore();
+  // skin side wall
+  const sideG=b.createLinearGradient(CX-A,0,CX+A,0);
+  sideG.addColorStop(0,'#5a3229');sideG.addColorStop(.28,'#b97c68');sideG.addColorStop(.45,'#d39a84');sideG.addColorStop(.75,'#9a5f50');sideG.addColorStop(1,'#4a2822');
+  for(let k=BODY_SIDE;k>=1;k--){pathR(b,-0.2,k);b.fillStyle=sideG;b.fill();}
+  pathR(b,0,BODY_SIDE);b.fillStyle='rgba(30,10,10,.0)';
+  // darken bottom of side wall
+  b.save();pathR(b,0,BODY_SIDE);b.clip();b.restore();
+  b.drawImage(face,0,0,W,H);
+  // thin rim light on cut edge
+  b.save();pathR(b,-0.3,0);b.strokeStyle='rgba(255,230,215,.25)';b.lineWidth=.6;b.stroke();b.restore();
+
+  /* band canvas */
+  const band=mk(bw,bh),bc=band.getContext('2d');bc.scale(S,S);
+  const bG=bc.createLinearGradient(CX-A-12,0,CX+A+12,0);
+  bG.addColorStop(0,'#060506');bG.addColorStop(.25,'#2a272b');bG.addColorStop(.42,'#3a373c');bG.addColorStop(.6,'#1b191c');bG.addColorStop(1,'#050405');
+  for(let k=BAND_SIDE;k>=1;k--){pathR(bc,BAND_OUT,k);bc.fillStyle=bG;bc.fill();}
+  // fine knit texture on side
+  bc.save();bc.globalCompositeOperation='source-atop';
+  for(let i=0;i<900;i++){const xx=CX-A-12+Math.random()*(2*A+24),yy=CY+Math.random()*(B+BAND_SIDE+14);bc.fillStyle='rgba(255,255,255,'+(Math.random()*.035)+')';bc.fillRect(xx,yy,1.4,.5);}
+  bc.restore();
+  // stitching near bottom & top edge
+  bc.save();bc.setLineDash([2.2,1.8]);bc.lineWidth=.55;bc.strokeStyle='rgba(255,255,255,.13)';
+  pathR(bc,BAND_OUT,BAND_SIDE-3);bc.stroke();pathR(bc,BAND_OUT,3);bc.stroke();bc.restore();
+  // bottom edge highlight
+  bc.save();bc.lineWidth=.6;bc.strokeStyle='rgba(255,255,255,.07)';pathR(bc,BAND_OUT,BAND_SIDE);bc.stroke();bc.restore();
+  // clear cut-face area and lay cut face
+  bc.save();bc.globalCompositeOperation='destination-out';pathR(bc,BAND_OUT,0);bc.fill();bc.restore();
+  const bandFace=mk(bw,bh);bandFace.getContext('2d').putImageData(bandImg,0,0);
+  bc.drawImage(bandFace,0,0,W,H);
+  bc.save();pathR(bc,BAND_OUT-0.3,0);bc.strokeStyle='rgba(255,255,255,.18)';bc.lineWidth=.5;bc.stroke();bc.restore();
+  // dots
+  const dots=[];{let acc=0,prev=null;const N=3000,step=12.4;
+    for(let i=0;i<N;i++){const th=i/N*TAU-Math.PI;const r=R(th)+BAND_IN+0.5;const p=[CX+Math.cos(th)*r,CY+Math.sin(th)*r];
+      if(prev){acc+=Math.hypot(p[0]-prev[0],p[1]-prev[1]);if(acc>=step){acc=0;dots.push({th,x:p[0],y:p[1]});}}prev=p;}}
+  for(const dt of dots){
+    const nx=Math.cos(dt.th),ny=Math.sin(dt.th);
+    bc.save();bc.translate(dt.x,dt.y);
+    const g=bc.createRadialGradient(-nx*0.4-0.8,-ny*0.4-0.9,0.2,0,0,3);
+    g.addColorStop(0,'#e0738f');g.addColorStop(.35,'#9e2849');g.addColorStop(.8,'#5c1027');g.addColorStop(1,'#2a0712');
+    bc.fillStyle=g;bc.beginPath();bc.arc(0,0,2.75,0,TAU);bc.fill();
+    bc.fillStyle='rgba(255,235,240,.75)';bc.beginPath();bc.arc(-0.8,-1,0.55,0,TAU);bc.fill();
+    bc.restore();}
+
+  /* glow masks (warm tint) */
+  const glow=masks.map((m,li)=>{const c=mk(W,H),cx=c.getContext('2d'),id=cx.createImageData(W,H);
+    const col=[[255,120,70],[255,110,50],[255,80,50],[255,120,60]][li];
+    for(let i=0;i<W*H;i++){id.data[i*4]=col[0];id.data[i*4+1]=col[1];id.data[i*4+2]=col[2];id.data[i*4+3]=m[i];}
+    cx.putImageData(id,0,0);return c;});
+  BASE={body,band,dots,glow};
+}
+
+/* ---------- effects ---------- */
+function rgba(r,g,b,a){return 'rgba('+r+','+g+','+b+','+clamp(a,0,1).toFixed(3)+')';}
+function dotGlow(ctx,d,k){if(k<=0.01)return;
+  const g=ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,9);
+  g.addColorStop(0,rgba(255,200,140,.9*k));g.addColorStop(.25,rgba(255,120,70,.55*k));g.addColorStop(1,rgba(255,60,40,0));
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(d.x,d.y,9,0,TAU);ctx.fill();
+  ctx.fillStyle=rgba(255,235,210,.85*k);ctx.beginPath();ctx.arc(d.x,d.y,1.2,0,TAU);ctx.fill();}
+function waveRing(ctx,scale,a,t,w){if(a<=0.01)return;
+  const N=160;ctx.lineWidth=w;ctx.lineCap='round';
+  let px=0,py=0;
+  for(let i=0;i<=N;i++){const th=i/N*TAU-Math.PI;const r=R(th)*scale;const x=CX+Math.cos(th)*r,y=CY+Math.sin(th)*r;
+    if(i){const sh=0.55+0.45*Math.sin(th*14+t*5)*Math.sin(th*5-t*2.3);
+      ctx.strokeStyle=rgba(255,lerp(120,200,sh),lerp(70,130,sh),a*sh);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();}
+    px=x;py=y;}}
+function labels(ctx,list,alpha){
+  ctx.save();ctx.globalAlpha=alpha;ctx.font='600 12.5px "Pretendard Variable",sans-serif';ctx.textBaseline='middle';
+  for(const L of list){
+    const tw=ctx.measureText(L.t).width,tx=L.l[0],ty=L.l[1];
+    const left=L.al==='left'?tx:tx-tw,right=left+tw;
+    const ax=L.p[0]<(left+right)/2?left-5:right+5;
+    ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(L.p[0],L.p[1]);
+    if(L.m)ctx.lineTo(L.m[0],L.m[1]);ctx.lineTo(ax,ty);ctx.stroke();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(L.p[0],L.p[1],1.6,0,TAU);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=.6;ctx.beginPath();ctx.arc(L.p[0],L.p[1],3.2,0,TAU);ctx.stroke();
+    ctx.textAlign=L.al;ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillText(L.t,tx,ty+0.8);
+    ctx.fillStyle='#f6ece9';ctx.fillText(L.t,tx,ty);}
+  ctx.restore();}
+function polar(th,dd){const r=R(th)-dd;return [CX+Math.cos(th)*r,CY+Math.sin(th)*r];}
+const LBL={
+  skin:{t:'피부',p:polar(-2.5,1.6),m:null,l:[18,30],al:'left'},
+  fat:{t:'피하지방',p:polar(0.62,8),m:null,l:[424,306],al:'right'},
+  muscle:{t:'근육',p:polar(2.62,SKIN+fatT(2.62)+4),m:null,l:[18,306],al:'left'},
+  core:{t:'심부',p:[CX+46,CY-24],m:[CX+46,22],l:[CX+62,22],al:'left'},
+  dot:{t:'버건디 도트',p:null,m:null,l:[424,30],al:'right'}};
+function chip(ctx,text,a,warm){if(a<=0.01)return;ctx.save();ctx.globalAlpha=a;ctx.font='700 12px "Pretendard Variable",sans-serif';
+  const w=ctx.measureText(text).width+24,x=CX-w/2,y=H-30,h=22;
+  ctx.fillStyle=warm?'rgba(142,31,63,.92)':'rgba(255,255,255,.12)';ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(x,y,w,h,11);else ctx.rect(x,y,w,h);ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=.6;ctx.stroke();
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,CX,y+h/2+0.5);ctx.restore();}
+
+/* ---------- per-card scenes ---------- */
+class Card{
+  constructor(cv){this.cv=cv;this.step=+cv.dataset.step;this.t=0;this.vis=false;this.parts=[];this.ctx=cv.getContext('2d');this.resize();}
+  resize(){const dpr=Math.min(window.devicePixelRatio||1,2.5);const w=this.cv.clientWidth||380;this.cv.width=Math.round(w*dpr);this.cv.height=Math.round(w*0.75*dpr);this.k=this.cv.width/W;}
+  draw(dt){const c=this.ctx;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,this.cv.width,this.cv.height);c.setTransform(this.k,0,0,this.k,0,0);
+    c.drawImage(BASE.body,0,0,W,H);
+    if(this.step===1)this.s1(c,dt);else if(this.step===2)this.s2(c,dt);else this.s3(c,dt);}
+  bandDots(c,lit){c.drawImage(BASE.band,0,0,W,H);c.save();c.globalCompositeOperation='lighter';BASE.dots.forEach((d,i)=>dotGlow(c,d,lit(d,i)));c.restore();}
+  s1(c,dt){const T=6.4,t=this.t%T;
+    const sweep=clamp((t-0.5)/4.0,0,1),fade=1-sstep(5.8,6.4,t);
+    const start=-Math.PI/2;
+    // skin warmth (body heat)
+    c.save();c.globalCompositeOperation='lighter';c.globalAlpha=(0.35+0.12*Math.sin(this.t*2.2))*fade+0.15;c.drawImage(BASE.glow[0],0,0,W,H);c.restore();
+    // particles
+    if(dt>0){const front=start+sweep*TAU;const rate=sweep>0&&sweep<1?70:(t<5.8?25:0);
+      let n=rate*dt;while(n>0){if(Math.random()<n){const th=(sweep>0&&sweep<1)?front-Math.random()*0.5:Math.random()*TAU-Math.PI;
+        this.parts.push({th,d0:2+Math.random()*12,p:0,sp:0.7+Math.random()*0.6,s:0.6+Math.random()*1.1});}n-=1;}}
+    c.save();c.globalCompositeOperation='lighter';
+    this.parts=this.parts.filter(p=>{p.p+=dt*p.sp;if(p.p>=1)return false;
+      const dd=lerp(p.d0,-(BAND_IN+0.5),sstep(0,1,p.p));const wob=Math.sin(p.p*9+p.d0)*0.025;const [x,y]=polar(p.th+wob,dd);
+      const a=Math.sin(p.p*Math.PI)*fade;const r=2.2*p.s+2;
+      const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(255,215,150,.95*a));g.addColorStop(.4,rgba(255,130,50,.5*a));g.addColorStop(1,rgba(255,80,30,0));
+      c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();return true;});
+    c.restore();
+    this.bandDots(c,(d)=>{let a=angDiff(d.th,start);if(a<0)a+=TAU;const pass=sweep*TAU-a;if(pass<0)return 0;return (0.65+0.35*Math.exp(-pass*3)+0.1*Math.sin(this.t*3+d.th*3))*fade;});
+    const dp=BASE.dots[Math.round(BASE.dots.length*0.415)];LBL.dot.p=[dp.x,dp.y];LBL.dot.m=null;
+    labels(c,[LBL.skin,LBL.fat,LBL.muscle,LBL.core,LBL.dot],1);
+    chip(c,'피부의 온기 → 도트',0.95,false);}
+  s2(c,dt){const t=this.t;
+    // waves clipped to body
+    c.save();pathR(c,0,0);c.clip();c.globalCompositeOperation='lighter';
+    const P=3.6,n=4;for(let i=0;i<n;i++){const p=((t/P)+i/n)%1;const sc=lerp(1.0,0.22,Math.pow(p,0.85));
+      const a=sstep(0,.08,p)*(1-sstep(.55,1,p));c.shadowColor='rgba(255,120,60,.8)';c.shadowBlur=6;
+      waveRing(c,sc,a*0.6,t+i,lerp(2.0,0.9,p));c.shadowBlur=0;
+      // soft heat band behind the ring
+      c.globalAlpha=a*0.10;c.lineWidth=14;c.strokeStyle='rgba(255,110,60,1)';c.beginPath();
+      for(let j=0;j<=120;j++){const th=j/120*TAU-Math.PI,r=R(th)*sc;const x=CX+Math.cos(th)*r,y=CY+Math.sin(th)*r;j?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();c.globalAlpha=1;}
+    // inward ray streaks from dots
+    BASE.dots.forEach((d,i)=>{const k=0.5+0.5*Math.sin(t*4.2-i*0.7);const L=6+k*10;const [x2,y2]=polar(d.th,L);
+      const g=c.createLinearGradient(d.x,d.y,x2,y2);g.addColorStop(0,rgba(255,170,110,.5*k));g.addColorStop(1,rgba(255,90,50,0));
+      c.strokeStyle=g;c.lineWidth=1.4;c.beginPath();c.moveTo(d.x,d.y);c.lineTo(x2,y2);c.stroke();});
+    c.restore();
+    c.save();c.globalCompositeOperation='lighter';c.globalAlpha=0.28;c.drawImage(BASE.glow[0],0,0,W,H);c.restore();
+    this.bandDots(c,(d,i)=>0.55+0.45*Math.sin(t*4.2-i*0.7));
+    const dp=BASE.dots[Math.round(BASE.dots.length*0.415)];LBL.dot.p=[dp.x,dp.y];LBL.dot.m=null;
+    labels(c,[LBL.skin,LBL.fat,LBL.muscle,LBL.core,LBL.dot],1);
+    chip(c,'도트 → 원적외선 방사',0.95,false);}
+  s3(c,dt){const T=11,t=this.t%T;
+    const reset=1-sstep(10.3,11,t);
+    const lit=sstep(0.4,1.2,t)*(1-sstep(5.2,6.2,t));
+    const front=clamp((t-1.2)/2.6,0,1);
+    const Lg=[sstep(1.2,1.9,t),sstep(1.8,2.6,t),sstep(2.5,3.3,t),sstep(3.1,4.0,t)];
+    const off=sstep(5.2,6.6,t);
+    const outerKeep=1-0.75*off;
+    const breathe=t>6?0.12*Math.sin((t-6)*2.0):0;
+    c.save();c.globalCompositeOperation='lighter';
+    c.globalAlpha=Lg[0]*0.45*outerKeep*reset;c.drawImage(BASE.glow[0],0,0,W,H);
+    c.globalAlpha=Lg[1]*0.22*outerKeep*reset;c.drawImage(BASE.glow[1],0,0,W,H);
+    c.globalAlpha=Lg[2]*(0.26-0.12*off)*reset;c.drawImage(BASE.glow[2],0,0,W,H);
+    c.globalAlpha=Lg[3]*(0.30+breathe)*reset;c.drawImage(BASE.glow[3],0,0,W,H);
+    c.globalAlpha=1;
+    // core radiant glow
+    const ca=Lg[3]*(0.6+0.35*off+breathe*1.8)*reset;
+    if(ca>0.01){c.save();pathR(c,-(SKIN+12),0);c.clip();const g=c.createRadialGradient(CX,CY-14,4,CX,CY-10,118);
+      g.addColorStop(0,rgba(255,200,120,.55*ca));g.addColorStop(.45,rgba(255,130,60,.32*ca));g.addColorStop(1,rgba(255,80,40,0));
+      c.fillStyle=g;c.fillRect(0,0,W,H);c.restore();}
+    // travelling front
+    if(front>0&&front<1){c.save();pathR(c,0,0);c.clip();c.shadowColor='rgba(255,140,70,1)';c.shadowBlur=10;
+      waveRing(c,lerp(1,0.3,front),Math.sin(front*Math.PI)*0.9,this.t,2.4);c.restore();}
+    c.restore();
+    // band with unwrap wipe
+    const bandA=(1-off)+sstep(10.3,11,t);
+    if(bandA>0.01){c.save();
+      if(off>0&&off<1&&t<10.3){c.beginPath();c.moveTo(CX,CY);const a0=-Math.PI/2+off*TAU;c.arc(CX,CY,400,a0,-Math.PI/2+TAU,false);c.closePath();c.clip();}
+      c.globalAlpha=t<10.3?clamp(1-off*0.4,0,1):sstep(10.3,11,t);
+      this.bandDots(c,(d,i)=>lit*(0.7+0.3*Math.sin(this.t*4-i*.6)));c.restore();}
+    labels(c,[LBL.skin,LBL.fat,LBL.muscle,LBL.core],1);
+    if(t<5.4)chip(c,'착용 중 · 심부까지 전해지는 온기',sstep(0.2,0.8,t)*(1-sstep(5,5.4,t)),false);
+    else chip(c,'벗은 뒤에도 남는 온기',sstep(5.6,6.3,t)*(1-sstep(10.1,10.6,t)),true);}
+}
+
+/* ---------- boot ---------- */
+buildBase();
+const cards=[...document.querySelectorAll('canvas[data-step]')].map(cv=>new Card(cv));
+const STATIC_T={1:5.0,2:1.6,3:7.6};
+function staticDraw(){cards.forEach(cd=>{cd.resize();cd.t=STATIC_T[cd.step];if(cd.step===1){for(let i=0;i<40;i++){cd.parts.push({th:Math.random()*TAU-Math.PI,d0:2+Math.random()*12,p:Math.random(),sp:0,s:1});}}cd.draw(0);});}
+if(reduce){staticDraw();if(document.fonts)document.fonts.ready.then(staticDraw);window.addEventListener('resize',staticDraw);return;}
+const io=new IntersectionObserver(es=>{es.forEach(e=>{const cd=cards.find(c=>c.cv===e.target);cd.vis=e.isIntersecting;});kick();},{threshold:0.15});
+cards.forEach(cd=>{io.observe(cd.cv);cd.t=0;cd.draw(0);});
+let raf=0,last=0;
+function loop(now){const dt=Math.min(0.05,last?(now-last)/1000:0);last=now;let any=false;
+  cards.forEach(cd=>{if(cd.vis){any=true;cd.t+=dt;cd.draw(dt);}});
+  if(any)raf=requestAnimationFrame(loop);else{raf=0;last=0;}}
+function kick(){if(!raf){last=0;raf=requestAnimationFrame(loop);}}
+window.addEventListener('resize',()=>{cards.forEach(cd=>{cd.resize();cd.draw(0);});});
+// test hook
+window.__v3seek=(step,t)=>{const cd=cards.find(c=>c.step===step);cd.t=t;cd.draw(0.016);};
+})();
+</script>
+</body>
+</html>

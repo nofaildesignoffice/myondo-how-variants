@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>마이온도 원리 · V4</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:#E9E4E5}
+  body{max-width:480px;margin:0 auto;background:#FBFAFA;font-family:'Pretendard Variable',sans-serif;word-break:keep-all;color:#222;-webkit-font-smoothing:antialiased}
+  .vlabel{position:fixed;top:10px;left:10px;z-index:50;background:rgba(20,10,14,.82);color:#fff;font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:999px;letter-spacing:.02em;backdrop-filter:blur(6px)}
+  .how{background:#F3F1F1;padding:76px 20px 52px}
+  .eyebrow{font-size:15px;color:#7A6C71;text-align:center;margin-bottom:10px}
+  .how h2{font-size:34px;font-weight:800;text-align:center;line-height:1.3;letter-spacing:-.02em;margin-bottom:36px}
+  .how h2 strong{color:#8E1F3F;font-weight:800}
+  .cards{display:flex;flex-direction:column;gap:22px}
+  .card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(80,20,40,.08)}
+  .fig{position:relative;aspect-ratio:4/3;background:#0b0709;overflow:hidden}
+  .fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .chip{position:absolute;left:12px;top:12px;display:flex;align-items:center;gap:7px;padding:6px 11px 6px 9px;border-radius:999px;background:rgba(14,8,10,.46);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.92);font-size:11.5px;font-weight:600;letter-spacing:.01em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:opacity .5s}
+  .chip i{width:6px;height:6px;border-radius:50%;background:#FFB46A;box-shadow:0 0 8px 2px rgba(255,150,80,.75);animation:blink 1.6s ease-in-out infinite}
+  .chip.light{background:rgba(255,255,255,.55);color:#3a2a30;border-color:rgba(255,255,255,.7)}
+  .tc{position:absolute;right:12px;bottom:10px;font-size:10px;font-weight:600;letter-spacing:.14em;color:rgba(255,255,255,.55);font-variant-numeric:tabular-nums}
+  .tc.dark{color:rgba(40,25,30,.45)}
+  @keyframes blink{50%{opacity:.35}}
+  .txt{padding:18px 22px 22px}
+  .step{font-size:11.5px;font-weight:800;color:#8E1F3F;letter-spacing:.12em;margin-bottom:6px}
+  .txt h3{font-size:21px;font-weight:800;letter-spacing:-.01em;margin-bottom:8px}
+  .txt p{font-size:14.5px;color:#333;line-height:1.65}
+  .nbt{margin-top:30px;font-size:13px;text-align:center;color:#7A6C71}
+  .nbt b{color:#8E1F3F}
+  .note{margin-top:10px;font-size:12px;color:#7A6C71;text-align:center;line-height:1.55}
+  @media (prefers-reduced-motion:reduce){.chip i{animation:none}}
+</style>
+</head>
+<body>
+<div class="vlabel">V4 · 실사 매크로 + 빛 효과</div>
+
+<section class="how">
+  <p class="eyebrow">오직 마이온도에서 확인할 수 있는</p>
+  <h2>전기 없이 따뜻해지는<br><strong>마이온도의 원리</strong></h2>
+
+  <div class="cards">
+    <article class="card">
+      <div class="fig" data-scene="absorb">
+        <canvas></canvas>
+        <div class="chip"><i></i><span>피부 온기 → 도트 흡수</span></div>
+        <div class="tc">MACRO · 01</div>
+      </div>
+      <div class="txt">
+        <div class="step">STEP 01</div>
+        <h3>체온 복사</h3>
+        <p>밴드 안쪽 버건디 도트가 맨살에 닿아, 피부의 온기를 받아들입니다.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="fig" data-scene="emit">
+        <canvas></canvas>
+        <div class="chip"><i></i><span>도트 광물 소재 · 원적외선 방사</span></div>
+        <div class="tc">MACRO · 02</div>
+      </div>
+      <div class="txt">
+        <div class="step">STEP 02</div>
+        <h3>원적외선 방사</h3>
+        <p>체온을 받은 도트 속 광물 소재가 원적외선과 열에너지를 내보냅니다.</p>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="fig" data-scene="deep">
+        <canvas></canvas>
+        <div class="chip light"><i></i><span class="ph">밴드 착용 · 온기 전달</span></div>
+        <div class="tc dark">CONCEPT · 03</div>
+      </div>
+      <div class="txt">
+        <div class="step">STEP 03</div>
+        <h3>심부까지 전해지는 온기</h3>
+        <p>도트에서 나온 원적외선이 피부에 닿아 몸속 깊은 곳까지 온기가 전해지고, 벗은 뒤에도 한동안 남습니다.</p>
+      </div>
+    </article>
+  </div>
+
+  <p class="nbt">약 40여 가지 광물을 융합한 <b>NBT 융복합 기술</b></p>
+  <p class="note">* 원리와 지속 시간은 브랜드 설명이며, 체감 시점과 정도는 사람마다 다릅니다. 일러스트는 이해를 돕기 위한 개념도입니다.</p>
+</section>
+
+<script>
+(function(){
+'use strict';
+// Dot centres detected from the macro photos (normalised x, y, radius, redness strength)
+var DOTS = {"a":[[0.21,0.0167,0.025,0.909],[0.6375,0.025,0.025,1.0],[0.3288,0.0283,0.025,1.0],[0.4512,0.035,0.025,1.0],[0.0412,0.0367,0.025,0.298],[0.1538,0.0383,0.025,0.732],[0.5788,0.0467,0.025,1.0],[0.2725,0.0483,0.025,0.913],[0.3938,0.0567,0.025,1.0],[0.1,0.0633,0.025,0.53],[0.52,0.0683,0.025,1.0],[0.2162,0.07,0.025,0.788],[0.3362,0.0783,0.025,1.0],[0.65,0.0817,0.025,1.0],[0.0462,0.0867,0.025,0.312],[0.16,0.0917,0.025,0.621],[0.4612,0.0917,0.025,1.0],[0.2788,0.1,0.025,1.0],[0.5913,0.1033,0.025,1.0],[0.4038,0.1133,0.025,1.0],[0.1038,0.115,0.025,0.412],[0.2225,0.1217,0.025,0.864],[0.5325,0.125,0.025,1.0],[0.345,0.135,0.025,0.986],[0.05,0.1417,0.025,0.225],[0.1662,0.1433,0.025,0.657],[0.6662,0.1433,0.025,1.0],[0.4738,0.1483,0.025,1.0],[0.2888,0.1583,0.025,0.85],[0.6075,0.165,0.025,1.0],[0.1112,0.1667,0.025,0.436],[0.4162,0.1717,0.025,1.0],[0.2312,0.18,0.025,0.692],[0.0562,0.1883,0.025,0.21],[0.5462,0.19,0.025,1.0],[0.3575,0.195,0.025,0.974],[0.1725,0.2017,0.025,0.516],[0.6812,0.2033,0.025,1.0],[0.4875,0.215,0.025,1.0],[0.2988,0.22,0.025,0.858],[0.115,0.2267,0.025,0.299],[0.62,0.2267,0.025,1.0],[0.4262,0.2383,0.025,1.0],[0.24,0.2433,0.025,0.684],[0.56,0.2517,0.025,1.0],[0.3675,0.2617,0.025,0.977],[0.1838,0.265,0.025,0.502],[0.6975,0.2683,0.025,1.0],[0.5,0.275,0.025,1.0],[0.3088,0.285,0.025,0.712],[0.1238,0.29,0.025,0.326],[0.635,0.2917,0.025,1.0],[0.44,0.2983,0.025,1.0],[0.25,0.3067,0.025,0.582],[0.5738,0.3167,0.025,1.0],[0.3787,0.3233,0.025,0.929],[0.19,0.3317,0.025,0.372],[0.7125,0.3317,0.025,1.0],[0.5125,0.3417,0.025,1.0],[0.3188,0.3467,0.025,0.761],[0.6512,0.355,0.025,1.0],[0.1312,0.3567,0.025,0.208],[0.45,0.365,0.025,1.0],[0.2612,0.37,0.025,0.55],[0.5863,0.38,0.025,1.0],[0.39,0.3883,0.025,0.802],[0.2013,0.3933,0.025,0.392],[0.73,0.4017,0.025,1.0],[0.5262,0.4033,0.025,1.0],[0.33,0.4117,0.025,0.64],[0.1425,0.4167,0.025,0.199],[0.6662,0.425,0.025,1.0],[0.4638,0.4283,0.025,0.894],[0.2675,0.435,0.025,0.457],[0.6025,0.4517,0.025,1.0],[0.4025,0.4533,0.025,0.789],[0.2062,0.4567,0.025,0.262],[0.7475,0.4683,0.025,1.0],[0.34,0.4767,0.025,0.608],[0.54,0.4767,0.025,0.954],[0.6838,0.4933,0.025,1.0],[0.475,0.4983,0.025,0.82],[0.2788,0.5,0.025,0.426],[0.6188,0.5183,0.025,0.992],[0.4125,0.52,0.025,0.654],[0.2188,0.5233,0.025,0.267],[0.7638,0.54,0.025,1.0],[0.5538,0.5417,0.025,0.907],[0.3512,0.5467,0.025,0.469],[0.7,0.565,0.025,1.0],[0.2862,0.5683,0.025,0.285],[0.4888,0.5683,0.025,0.771],[0.6338,0.5883,0.025,0.97],[0.425,0.5917,0.025,0.607],[0.2262,0.595,0.025,0.166],[0.7825,0.6067,0.025,1.0],[0.3638,0.615,0.025,0.44],[0.5662,0.615,0.025,0.872],[0.715,0.6333,0.025,1.0],[0.3,0.64,0.025,0.271],[0.5012,0.64,0.025,0.704],[0.65,0.6583,0.025,0.937],[0.4375,0.6667,0.025,0.488],[0.5825,0.6833,0.025,0.807],[0.7988,0.6833,0.025,1.0],[0.3725,0.6883,0.025,0.327],[0.5175,0.71,0.025,0.649],[0.7362,0.7117,0.025,0.972],[0.3088,0.715,0.025,0.195],[0.665,0.7367,0.025,0.879],[0.455,0.7383,0.025,0.487],[0.82,0.7567,0.025,0.92],[0.3838,0.7617,0.025,0.308],[0.5975,0.765,0.025,0.667],[0.3212,0.7883,0.025,0.17],[0.53,0.79,0.025,0.497],[0.7488,0.79,0.025,0.844],[0.4625,0.8133,0.025,0.329],[0.6825,0.8167,0.025,0.777],[0.3962,0.84,0.025,0.218],[0.6162,0.84,0.025,0.585],[0.8388,0.8417,0.025,0.921],[0.5462,0.8683,0.025,0.442],[0.77,0.87,0.025,0.874],[0.4775,0.895,0.025,0.327],[0.7,0.895,0.025,0.682],[0.86,0.92,0.025,0.775],[0.4112,0.9217,0.025,0.195],[0.63,0.9233,0.025,0.496],[0.79,0.9483,0.025,0.733],[0.5625,0.9533,0.025,0.345],[0.4912,0.9783,0.025,0.235],[0.72,0.9783,0.025,0.629]],"b":[[0.665,0.0283,0.035,1.0],[0.365,0.05,0.035,1.0],[0.0762,0.0567,0.035,0.89],[0.57,0.0667,0.035,1.0],[0.2712,0.085,0.035,1.0],[0.4775,0.1033,0.035,1.0],[0.1812,0.12,0.035,1.0],[0.6875,0.1333,0.035,1.0],[0.3838,0.1417,0.035,1.0],[0.0912,0.155,0.035,0.743],[0.5925,0.1683,0.035,1.0],[0.2938,0.1767,0.035,1.0],[0.5,0.2067,0.035,1.0],[0.1988,0.215,0.035,0.975],[0.7125,0.2267,0.035,1.0],[0.4038,0.2417,0.035,1.0],[0.1075,0.25,0.035,0.809],[0.6175,0.265,0.035,1.0],[0.3088,0.28,0.035,1.0],[0.0188,0.285,0.035,0.584],[0.5175,0.3033,0.035,1.0],[0.2162,0.315,0.035,0.83],[0.7388,0.3367,0.035,1.0],[0.4238,0.3383,0.035,1.0],[0.1238,0.3533,0.035,0.67],[0.6412,0.37,0.035,1.0],[0.3275,0.3767,0.035,0.933],[0.0275,0.385,0.035,0.48],[0.5425,0.4117,0.035,1.0],[0.2338,0.415,0.035,0.828],[0.7662,0.4367,0.035,1.0],[0.1412,0.45,0.035,0.641],[0.4462,0.45,0.035,0.994],[0.6675,0.4767,0.035,1.0],[0.3475,0.4833,0.035,0.857],[0.045,0.4867,0.035,0.459],[0.5675,0.5167,0.035,1.0],[0.2512,0.5183,0.035,0.674],[0.7912,0.55,0.035,1.0],[0.4675,0.5517,0.035,0.953],[0.1562,0.5583,0.035,0.487],[0.6912,0.5883,0.035,1.0],[0.3675,0.59,0.035,0.803],[0.0562,0.5933,0.035,0.293],[0.59,0.6233,0.035,1.0],[0.2675,0.6283,0.035,0.632],[0.8188,0.65,0.035,1.0],[0.4862,0.665,0.035,0.902],[0.1725,0.6667,0.035,0.447],[0.7163,0.6917,0.035,1.0],[0.085,0.7,0.035,0.281],[0.3862,0.7033,0.035,0.726],[0.6138,0.73,0.035,0.984],[0.29,0.7417,0.035,0.508],[0.845,0.7683,0.035,1.0],[0.5112,0.77,0.035,0.846],[0.1925,0.7783,0.035,0.339],[0.4112,0.81,0.035,0.674],[0.7488,0.8117,0.035,0.994],[0.0925,0.8167,0.035,0.213],[0.315,0.8533,0.035,0.502],[0.64,0.8533,0.035,0.907],[0.8788,0.8833,0.035,0.938],[0.205,0.8883,0.035,0.312],[0.5337,0.895,0.035,0.689],[0.1162,0.93,0.035,0.182],[0.4312,0.93,0.035,0.517],[0.7688,0.93,0.035,0.866],[0.3275,0.97,0.035,0.343],[0.6662,0.98,0.035,0.808]]};
+var IW = 800, IH = 600;
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+var DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+function rnd(a,b){return a+Math.random()*(b-a);}
+function clamp(v,a,b){return v<a?a:v>b?b:v;}
+function smooth(e0,e1,x){var t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t);}
+function loadImg(src){return new Promise(function(res){var i=new Image();i.onload=function(){res(i);};i.onerror=function(){res(null);};i.src=src;});}
+
+// ---------- sprite factory (pre-rendered soft lights) ----------
+function sprite(size, stops){
+  var c=document.createElement('canvas');c.width=c.height=size;
+  var g=c.getContext('2d'),r=size/2,gr=g.createRadialGradient(r,r,0,r,r,r);
+  stops.forEach(function(s){gr.addColorStop(s[0],s[1]);});
+  g.fillStyle=gr;g.fillRect(0,0,size,size);return c;
+}
+var SP = {
+  ember: sprite(64,[[0,'rgba(255,250,225,1)'],[.18,'rgba(255,214,140,.95)'],[.45,'rgba(255,150,60,.35)'],[1,'rgba(255,120,40,0)']]),
+  bokeh: sprite(128,[[0,'rgba(255,200,130,.55)'],[.62,'rgba(255,170,90,.42)'],[.82,'rgba(255,160,80,.30)'],[1,'rgba(255,150,70,0)']]),
+  dotGlow: sprite(128,[[0,'rgba(255,215,190,1)'],[.16,'rgba(255,120,130,.85)'],[.42,'rgba(214,40,80,.38)'],[1,'rgba(150,10,50,0)']]),
+  dotCore: sprite(64,[[0,'rgba(255,240,225,1)'],[.35,'rgba(255,160,150,.7)'],[1,'rgba(255,90,110,0)']]),
+  ir: sprite(128,[[0,'rgba(255,190,140,1)'],[.2,'rgba(255,90,70,.75)'],[.5,'rgba(220,30,40,.28)'],[1,'rgba(160,0,30,0)']]),
+  ring: sprite(256,[[0,'rgba(255,120,90,0)'],[.74,'rgba(255,120,90,0)'],[.86,'rgba(255,150,110,.55)'],[.93,'rgba(255,90,80,.2)'],[1,'rgba(255,80,60,0)']])
+};
+// soft volumetric rays texture (stacked wedges give feathered edges)
+var RAYS=(function(){var S=512,c=document.createElement('canvas');c.width=c.height=S;var g=c.getContext('2d'),h=S/2;g.globalCompositeOperation='lighter';
+  for(var k=0;k<11;k++){var ang=k/11*Math.PI*2+Math.sin(k*2.1)*.25,w=.035+.03*Math.abs(Math.sin(k*1.7));
+    for(var l=1;l<=6;l++){var gr=g.createRadialGradient(h,h,0,h,h,h);var a=.05;gr.addColorStop(0,'rgba(255,190,140,'+a*1.6+')');gr.addColorStop(.3,'rgba(255,100,70,'+a+')');gr.addColorStop(1,'rgba(255,60,40,0)');
+      g.fillStyle=gr;g.beginPath();g.moveTo(h,h);g.arc(h,h,h,ang-w*l/3,ang+w*l/3);g.closePath();g.fill();}}
+  return c;})();
+// film grain
+var GRAIN=(function(){var c=document.createElement('canvas');c.width=c.height=160;var g=c.getContext('2d'),d=g.createImageData(160,160);
+  for(var i=0;i<d.data.length;i+=4){var v=Math.random()*255|0;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}g.putImageData(d,0,0);return c;})();
+
+// ---------- base scene ----------
+function Scene(fig, opts){
+  this.fig=fig;this.cv=fig.querySelector('canvas');this.ctx=this.cv.getContext('2d');
+  this.t=0;this.raf=0;this.last=0;this.vis=false;this.ready=false;
+  for(var k in opts) this[k]=opts[k];
+  var self=this;
+  this.resize=function(){var w=fig.clientWidth,h=fig.clientHeight;self.cv.width=Math.round(w*DPR);self.cv.height=Math.round(h*DPR);if(self.ready&&!self.raf)self.render();};
+  this.resize();window.addEventListener('resize',this.resize);
+}
+Scene.prototype.frame=function(now){
+  var self=this;
+  var dt=this.last?Math.min(.05,(now-this.last)/1000):1/60;this.last=now;
+  this.t+=dt;this.update(dt);this.render();
+  this.raf=requestAnimationFrame(function(n){self.frame(n);});
+};
+Scene.prototype.start=function(){
+  if(!this.ready||this.raf)return;
+  if(REDUCED){this.warm(this.staticT);this.render();return;}
+  var self=this;this.last=0;this.raf=requestAnimationFrame(function(n){self.frame(n);});
+};
+Scene.prototype.stop=function(){if(this.raf)cancelAnimationFrame(this.raf);this.raf=0;};
+Scene.prototype.warm=function(sec){for(var i=0;i<sec*30;i++){this.t+=1/30;this.update(1/30);}};
+// map image space (800x600) into canvas with gentle push-in
+Scene.prototype.cam=function(zoom,fx,fy){
+  var c=this.ctx,W=this.cv.width,H=this.cv.height,k=Math.max(W/IW,H/IH)*zoom;
+  c.setTransform(k,0,0,k,W/2-fx*IW*k,H/2-fy*IH*k);
+  this.k=k;
+};
+Scene.prototype.grain=function(a){
+  var c=this.ctx;c.setTransform(1,0,0,1,0,0);c.globalCompositeOperation='overlay';c.globalAlpha=a;
+  var p=c.createPattern(GRAIN,'repeat');var ox=Math.random()*160|0,oy=Math.random()*160|0;
+  c.translate(-ox,-oy);c.fillStyle=p;c.fillRect(0,0,this.cv.width+ox,this.cv.height+oy);
+  c.setTransform(1,0,0,1,0,0);c.globalAlpha=1;c.globalCompositeOperation='source-over';
+};
+Scene.prototype.vignette=function(a,col){
+  var c=this.ctx,W=this.cv.width,H=this.cv.height;c.setTransform(1,0,0,1,0,0);
+  var g=c.createRadialGradient(W*.5,H*.48,H*.25,W*.5,H*.5,W*.78);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,col||'rgba(6,2,4,'+a+')');
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+};
+function blit(c,img,x,y,s,a){c.globalAlpha=a;c.drawImage(img,x-s/2,y-s/2,s,s);}
+
+// =========================================================
+// STEP 01 · body warmth drifts in from the skin side and is absorbed by the dots
+// =========================================================
+function absorbScene(fig,img){
+  var dots=DOTS.a.map(function(d){return {x:d[0]*IW,y:d[1]*IH,r:d[2]*IW,v:d[3],h:0,f:0};});
+  var targets=dots.filter(function(d){return d.v>.55&&d.y>60;});
+  var parts=[],T=8.5;
+  var s=new Scene(fig,{staticT:5.2});
+  s.update=function(dt){
+    var p=this.t%T, spawning=p<5.6;
+    if(p<dt*1.5){dots.forEach(function(d){d.h*=.3;});}
+    // spawn
+    var rate=spawning?(p<1?18:34):0;
+    var n=rate*dt+Math.random()*.01;while(n>0){if(Math.random()<n)spawn();n-=1;}
+    if(spawning&&Math.random()<dt*2.2)spawnBokeh();
+    for(var i=parts.length-1;i>=0;i--){
+      var q=parts[i];q.age+=dt;var u=q.age/q.life;
+      if(q.bokeh){q.x+=q.vx*dt;q.y+=q.vy*dt;if(u>=1)parts.splice(i,1);continue;}
+      if(u>=1){q.tg.h=Math.min(1.6,q.tg.h+.42);q.tg.f=1;parts.splice(i,1);continue;}
+      var e=1-Math.pow(1-u,2.2);
+      // quadratic bezier toward the dot with a lazy sideways drift
+      var mx=q.cx,my=q.cy,a=(1-e)*(1-e),b=2*(1-e)*e,cc=e*e;
+      q.px=q.x;q.py=q.y;
+      q.x=a*q.sx+b*mx+cc*q.tg.x+Math.sin(q.age*q.wf+q.ph)*q.wa*(1-e);
+      q.y=a*q.sy+b*my+cc*q.tg.y;
+    }
+    var dec=spawning?.22:.9;
+    dots.forEach(function(d){d.h*=Math.exp(-dt*dec);d.f*=Math.exp(-dt*5);});
+  };
+  function spawn(){
+    var tg=targets[Math.random()*targets.length|0];
+    var sx=clamp(tg.x+rnd(-260,120),-40,IW+40),sy=IH+rnd(10,60);
+    if(Math.random()<.35){sx=-30;sy=clamp(tg.y+rnd(40,260),IH*.4,IH+40);}
+    parts.push({sx:sx,sy:sy,x:sx,y:sy,px:sx,py:sy,cx:(sx+tg.x)/2+rnd(-90,90),cy:Math.max(tg.y,sy)-rnd(40,180),
+      tg:tg,age:0,life:rnd(1.6,3.1),wf:rnd(2,4),wa:rnd(4,14),ph:rnd(0,6),sz:rnd(9,20)});
+  }
+  function spawnBokeh(){
+    parts.push({bokeh:1,x:rnd(0,IW),y:IH+rnd(20,80),vx:rnd(-20,30),vy:-rnd(50,110),age:0,life:rnd(4,7),sz:rnd(70,150),a:rnd(.25,.5)});
+  }
+  s.render=function(){
+    var c=this.ctx,t=this.t,p=t%T,W=this.cv.width,H=this.cv.height;
+    var heat=0;dots.forEach(function(d){heat+=Math.min(1,d.h);});heat/=targets.length;
+    c.globalCompositeOperation='source-over';c.globalAlpha=1;
+    this.cam(1.06+.02*Math.sin(t*.18),.52+.01*Math.sin(t*.13),.5);
+    c.drawImage(img,0,0,IW,IH);
+    // cinematic grade: crush to near-black, then warm wash from the skin side
+    c.fillStyle='rgba(8,3,6,.42)';c.fillRect(-20,-20,IW+40,IH+40);
+    c.globalCompositeOperation='soft-light';c.fillStyle='rgba(255,150,80,.35)';c.fillRect(-20,-20,IW+40,IH+40);
+    c.globalCompositeOperation='screen';
+    var g=c.createLinearGradient(0,IH,IW*.35,IH*.25);
+    g.addColorStop(0,'rgba(255,140,60,'+(.20+.22*heat)+')');g.addColorStop(.55,'rgba(255,110,60,'+(.05+.08*heat)+')');g.addColorStop(1,'rgba(255,110,60,0)');
+    c.fillStyle=g;c.fillRect(-20,-20,IW+40,IH+40);
+    // dot glows mapped onto the real dots
+    c.globalCompositeOperation='lighter';
+    dots.forEach(function(d){
+      var h=Math.min(1.3,d.h);if(h<.02)return;
+      var fl=1+.06*Math.sin(t*3+d.x*.05);
+      blit(c,SP.dotGlow,d.x,d.y,d.r*(5.2+2.2*h)*fl,clamp(h*.5*d.v,0,.85));
+      blit(c,SP.dotCore,d.x,d.y,d.r*2.3,clamp(h*.28*d.v+d.f*.45,0,.8));
+    });
+    // particles
+    parts.forEach(function(q){
+      if(q.bokeh){var u=q.age/q.life,a=q.a*Math.sin(Math.PI*u);blit(c,SP.bokeh,q.x,q.y,q.sz,a);return;}
+      var u=q.age/q.life,a=smooth(0,.15,u);
+      // short motion trail
+      for(var j=3;j>=1;j--){blit(c,SP.ember,q.x+(q.px-q.x)*j*2.2,q.y+(q.py-q.y)*j*2.2,q.sz*(1-j*.18),a*.18);}
+      blit(c,SP.ember,q.x,q.y,q.sz*(1.1-.35*u),a*.95);
+    });
+    c.globalAlpha=1;c.globalCompositeOperation='source-over';
+    this.vignette(.62);
+    // end-of-loop fade
+    var fo=smooth(7.6,8.5,p)+(1-smooth(0,.5,p));
+    if(fo>0){c.fillStyle='rgba(6,2,4,'+(fo*.55)+')';c.fillRect(0,0,W,H);}
+    this.grain(.07);
+  };
+  return s;
+}
+
+// =========================================================
+// STEP 02 · dots emit pulsing infrared light: waves, rays, heat shimmer
+// =========================================================
+function emitScene(fig,img){
+  var dots=DOTS.b.map(function(d){return {x:d[0]*IW,y:d[1]*IH,r:d[2]*IW,v:d[3]};});
+  var strong=dots.filter(function(d){return d.v>.6;});
+  var C={x:IW*.47,y:IH*.5},rings=[],embers=[],T=6,nextRing=0;
+  var s=new Scene(fig,{staticT:3.1});
+  s.update=function(dt){
+    var t=this.t;
+    if(t>nextRing){var d=strong[Math.random()*strong.length|0];rings.push({x:d.x,y:d.y,age:0,life:rnd(2,2.8),max:rnd(120,190),a:rnd(.5,.8)});nextRing=t+rnd(.25,.55);}
+    if((t%T)<dt*1.2)rings.push({x:C.x,y:C.y,age:0,life:3.4,max:820,a:.55,big:1});
+    for(var i=rings.length-1;i>=0;i--){rings[i].age+=dt;if(rings[i].age>rings[i].life)rings.splice(i,1);}
+    if(Math.random()<dt*14){var d2=dots[Math.random()*dots.length|0];embers.push({x:d2.x,y:d2.y,vx:rnd(-12,12),vy:-rnd(18,48),age:0,life:rnd(1.8,3.4),sz:rnd(5,10)});}
+    for(var j=embers.length-1;j>=0;j--){var e=embers[j];e.age+=dt;e.x+=e.vx*dt+Math.sin(e.age*3+e.y*.02)*.4;e.y+=e.vy*dt;if(e.age>e.life)embers.splice(j,1);}
+  };
+  s.render=function(){
+    var c=this.ctx,t=this.t,W=this.cv.width,H=this.cv.height;
+    var I=.55+.45*Math.sin(t*(2*Math.PI/T)-Math.PI/2)*.5+.225; // global intensity breathing
+    c.globalCompositeOperation='source-over';c.globalAlpha=1;
+    this.cam(1.08+.015*Math.sin(t*.25),.5,.5);
+    // heat-haze shimmer: the photo is redrawn in thin strips with travelling sub-pixel offsets
+    var amp=1.1+1.6*I,band=4;
+    for(var y=0;y<IH;y+=band){
+      var dx=Math.sin(y*.045+t*4.4)*amp+Math.sin(y*.13-t*2.9)*amp*.45;
+      var dy=Math.sin(y*.02+t*1.7)*amp*.25;
+      c.drawImage(img,0,y,IW,band,dx,y+dy,IW,band+.6);
+    }
+    // grade down, then infrared tint
+    c.fillStyle='rgba(8,2,5,.52)';c.fillRect(-30,-30,IW+60,IH+60);
+    c.globalCompositeOperation='soft-light';
+    c.fillStyle='rgba(255,90,50,'+(.16+.2*I)+')';c.fillRect(-30,-30,IW+60,IH+60);
+    // light rays from the emission centre
+    c.globalCompositeOperation='lighter';
+    c.save();c.translate(C.x,C.y);c.rotate(t*.06);c.globalAlpha=(.45+.35*Math.sin(t*1.1))*I;
+    c.drawImage(RAYS,-700,-700,1400,1400);c.rotate(-t*.13);c.globalAlpha=(.3+.25*Math.sin(t*.8+1))*I;c.drawImage(RAYS,-560,-560,1120,1120);c.restore();c.globalAlpha=1;
+    // per-dot infrared pulse travelling outward from the centre
+    dots.forEach(function(d){
+      var dist=Math.hypot(d.x-C.x,d.y-C.y)/IW;
+      var pl=.5+.5*Math.sin(t*2.6-dist*11);pl=pl*pl;
+      var a=(.18+.62*pl)*d.v*(.55+.45*I);
+      blit(c,SP.ir,d.x,d.y,d.r*(4.2+2.4*pl),a*.75);
+      blit(c,SP.dotCore,d.x,d.y,d.r*2.1,a*.45);
+    });
+    // expanding wave rings
+    rings.forEach(function(r){
+      var u=r.age/r.life,e=1-Math.pow(1-u,2),sz=r.max*e*2+20;
+      var a=r.a*(1-u)*(r.big?.8:1)*smooth(0,.08,u);
+      blit(c,SP.ring,r.x,r.y,sz,a);
+      if(!r.big)blit(c,SP.ring,r.x,r.y,sz*.62,a*.5);
+    });
+    // drifting heat embers
+    embers.forEach(function(e){var u=e.age/e.life;blit(c,SP.ember,e.x,e.y,e.sz,.55*Math.sin(Math.PI*u));});
+    // bloom at the core
+    c.globalAlpha=1;
+    var bl=c.createRadialGradient(C.x,C.y,0,C.x,C.y,420);
+    bl.addColorStop(0,'rgba(255,110,80,'+(.16+.14*I)+')');bl.addColorStop(1,'rgba(255,60,40,0)');
+    c.fillStyle=bl;c.fillRect(-30,-30,IW+60,IH+60);
+    c.globalCompositeOperation='source-over';
+    this.vignette(.7);
+    this.grain(.07);
+  };
+  return s;
+}
+
+// =========================================================
+// STEP 03 · warmth spreads from the band deep into the torso, then lingers
+// =========================================================
+function deepScene(fig,img,mask){
+  var T=11,BAND={x:358,y:378,rx:150,ry:58},CORE={x:352,y:320};
+  var G=document.createElement('canvas');G.width=400;G.height=300;var g=G.getContext('2d');
+  var flows=[];
+  var chip=fig.querySelector('.ph'),lastPh=-1;
+  var s=new Scene(fig,{staticT:6.4});
+  function env(p){
+    var bandGlow=smooth(.9,2.6,p)*(1-smooth(5.6,7,p));
+    var spread=smooth(1.8,5.4,p);
+    var dim=smooth(5.6,7,p)*(1-smooth(10.2,11,p));
+    var warm=spread*(1-smooth(9.4,11,p)*.85);
+    return {bandGlow:bandGlow,spread:spread,dim:dim,warm:warm};
+  }
+  s.update=function(dt){
+    var p=this.t%T,E=env(p);
+    if(E.warm>.1&&Math.random()<dt*10*E.warm){
+      flows.push({x:BAND.x+rnd(-130,130),y:BAND.y+rnd(-25,25),vx:rnd(-10,10),vy:-rnd(25,60),age:0,life:rnd(2,3.6),sz:rnd(60,120)});
+    }
+    for(var i=flows.length-1;i>=0;i--){var f=flows[i];f.age+=dt;f.x+=f.vx*dt+(CORE.x-f.x)*.12*dt;f.y+=f.vy*dt;if(f.age>f.life)flows.splice(i,1);}
+    var ph=p<1.8?0:p<5.6?1:p<9.6?2:0;
+    if(ph!==lastPh){lastPh=ph;chip.textContent=['밴드 착용 · 체온과 만나는 중','도트 → 몸속으로 온기 전달','밴드를 벗은 뒤에도 남는 온기'][ph];}
+  };
+  s.render=function(){
+    var c=this.ctx,t=this.t,p=t%T,E=env(p);
+    var pulse=.88+.12*Math.sin(t*1.9);
+    // ---- build the glow layer in image space (half res), clipped to the body silhouette
+    g.setTransform(.5,0,0,.5,0,0);g.globalCompositeOperation='source-over';g.globalAlpha=1;
+    g.clearRect(0,0,IW,IH);
+    var cx=BAND.x+(CORE.x-BAND.x)*E.dim, cy=BAND.y+(CORE.y-BAND.y)*(.35*E.spread+.65*E.dim);
+    var rad=70+200*E.spread, w=E.warm*(E.dim>0?pulse:1);
+    if(w>.01){
+      var gr=g.createRadialGradient(cx,cy,0,cx,cy,rad);
+      gr.addColorStop(0,'rgba(255,170,110,'+(.85*w)+')');gr.addColorStop(.22,'rgba(255,120,60,'+(.75*w)+')');
+      gr.addColorStop(.5,'rgba(236,74,44,'+(.36*w)+')');gr.addColorStop(.8,'rgba(200,40,40,'+(.08*w)+')');gr.addColorStop(1,'rgba(180,20,40,0)');
+      g.fillStyle=gr;g.save();g.translate(cx,cy);g.scale(1.15,1);g.translate(-cx,-cy);g.fillRect(0,0,IW,IH);g.restore();
+    }
+    g.globalCompositeOperation='screen';
+    flows.forEach(function(f){var u=f.age/f.life;blit(g,SP.ir,f.x,f.y,f.sz*(1+u*.6),.28*Math.sin(Math.PI*u)*E.warm);});
+    if(E.bandGlow>.01){
+      g.globalAlpha=1;g.save();g.translate(BAND.x,BAND.y);g.scale(BAND.rx/60,BAND.ry/60);
+      var bg=g.createRadialGradient(0,0,0,0,0,60);
+      bg.addColorStop(0,'rgba(255,150,90,'+(.75*E.bandGlow)+')');bg.addColorStop(.6,'rgba(240,80,50,'+(.5*E.bandGlow)+')');bg.addColorStop(1,'rgba(220,40,50,0)');
+      g.fillStyle=bg;g.fillRect(-60,-60,120,120);g.restore();
+    }
+    g.globalAlpha=1;g.globalCompositeOperation='destination-in';g.setTransform(1,0,0,1,0,0);g.drawImage(mask,0,0,400,300);
+    // ---- composite onto the photo
+    c.globalCompositeOperation='source-over';c.globalAlpha=1;
+    this.cam(1.03+.015*Math.sin(t*.16),.5,.52);
+    c.drawImage(img,0,0,IW,IH);
+    // slightly cool, low-key grade so warmth reads
+    c.globalCompositeOperation='multiply';c.fillStyle='rgb(222,220,226)';c.fillRect(-20,-20,IW+40,IH+40);
+    c.globalCompositeOperation='soft-light';c.globalAlpha=1;c.drawImage(G,0,0,IW,IH);
+    c.globalCompositeOperation='screen';c.globalAlpha=.62;c.drawImage(G,0,0,IW,IH);
+    // band region dims once the band's job is done
+    if(E.dim>.01){
+      c.globalCompositeOperation='multiply';c.globalAlpha=E.dim*.55;
+      c.save();c.translate(BAND.x,BAND.y);c.scale(BAND.rx/60*1.15,BAND.ry/60*1.25);
+      var dg=c.createRadialGradient(0,0,0,0,0,60);dg.addColorStop(0,'rgb(120,112,114)');dg.addColorStop(1,'rgb(255,255,255)');
+      c.fillStyle=dg;c.fillRect(-60,-60,120,120);c.restore();
+    }
+    c.globalAlpha=1;c.globalCompositeOperation='source-over';
+    this.vignette(0,'rgba(40,20,26,.28)');
+    var fo=1-smooth(0,.6,p);if(fo>0){c.fillStyle='rgba(240,236,236,'+(fo*.35)+')';c.fillRect(0,0,this.cv.width,this.cv.height);}
+    this.grain(.05);
+  };
+  return s;
+}
+
+// ---------- boot ----------
+var figs=document.querySelectorAll('.fig');
+Promise.all([loadImg('../img/v4_dots_a.jpg'),loadImg('../img/v4_dots_b.jpg'),loadImg('../img/v4_torso.jpg'),loadImg('../img/v4_torso_mask.png')]).then(function(im){
+  var scenes=[absorbScene(figs[0],im[0]),emitScene(figs[1],im[1]),deepScene(figs[2],im[2],im[3])];
+  scenes.forEach(function(sc){sc.ready=true;sc.fig._scene=sc;sc.warm(.6);sc.render();});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){var sc=e.target._scene;sc.vis=e.isIntersecting;if(sc.vis&&!document.hidden)sc.start();else sc.stop();});},{threshold:.15});
+  scenes.forEach(function(sc){io.observe(sc.fig);});
+  document.addEventListener('visibilitychange',function(){scenes.forEach(function(sc){if(document.hidden)sc.stop();else if(sc.vis)sc.start();});});
+});
+})();
+</script>
+</body>
+</html>

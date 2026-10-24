@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>마이온도 원리 · V5</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:#E9E4E5}
+  body{max-width:480px;margin:0 auto;background:#FBFAFA;font-family:'Pretendard Variable',sans-serif;word-break:keep-all;color:#222;-webkit-font-smoothing:antialiased}
+  .tag{position:fixed;top:10px;left:10px;z-index:50;background:rgba(30,18,22,.82);color:#fff;font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:999px;letter-spacing:.02em;backdrop-filter:blur(6px)}
+  .spacer{height:40px;background:#FBFAFA}
+  .how{background:#F3F1F1;padding:76px 20px 52px}
+  .eyebrow{font-size:15px;color:#7A6C71;text-align:center;margin-bottom:10px}
+  .how h2{font-size:34px;font-weight:800;text-align:center;line-height:1.3;letter-spacing:-.02em;margin-bottom:34px}
+  .how h2 strong{color:#8E1F3F;font-weight:800}
+  .cards{display:flex;flex-direction:column;gap:22px}
+  .card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(80,20,40,.08)}
+  .fig{position:relative;aspect-ratio:4/3;overflow:hidden;
+       background:radial-gradient(120% 90% at 50% 38%,#FFFFFF 0%,#F4EFEE 55%,#E7DEDD 100%)}
+  .fig img.poster,.fig img.snap{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .fig img.snap{opacity:0}
+  .fig canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
+  .legend{position:absolute;left:12px;bottom:10px;z-index:3;display:flex;gap:9px;font-size:10.5px;font-weight:600;color:#6d5f63;
+          background:rgba(255,255,255,.72);padding:5px 9px;border-radius:999px;backdrop-filter:blur(4px)}
+  .legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:0}
+  .chip{position:absolute;right:12px;top:11px;z-index:3;font-size:10.5px;font-weight:700;color:#8E1F3F;letter-spacing:.06em;
+        background:rgba(255,255,255,.75);padding:4px 9px;border-radius:999px;backdrop-filter:blur(4px)}
+  .txt{padding:18px 22px 22px}
+  .step{font-size:11.5px;font-weight:800;color:#8E1F3F;letter-spacing:.12em;margin-bottom:6px}
+  .txt h3{font-size:21px;font-weight:800;margin-bottom:8px;letter-spacing:-.01em}
+  .txt p{font-size:14.5px;color:#333;line-height:1.65}
+  .nbt{font-size:13px;text-align:center;color:#7A6C71;margin-top:28px}
+  .nbt b{color:#8E1F3F}
+  .note{font-size:12px;color:#7A6C71;margin-top:8px;line-height:1.55;text-align:center}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<div class="tag">V5 · 3D 실시간 렌더</div>
+<div class="spacer"></div>
+<section class="how">
+  <p class="eyebrow">오직 마이온도에서 확인할 수 있는</p>
+  <h2>전기 없이 따뜻해지는<br><strong>마이온도의 원리</strong></h2>
+  <div class="cards">
+    <article class="card" data-step="1">
+      <div class="fig"><img class="poster" onerror="this.style.display='none'" src="../img/v5_poster_1.png" alt="밴드 안쪽 도트가 피부의 온기를 받아들이는 3D 단면 렌더"><img class="snap" alt=""><span class="chip">SKIN → DOT</span>
+        <div class="legend"><span><i style="background:#E2AE98"></i>피부</span><span><i style="background:#EDC75A"></i>지방</span><span><i style="background:#A8282E"></i>근육</span><span><i style="background:#C9605A"></i>심부</span></div></div>
+      <div class="txt"><div class="step">STEP 01</div><h3>체온 복사</h3><p>밴드 안쪽 버건디 도트가 맨살에 닿아, 피부의 온기를 받아들입니다.</p></div>
+    </article>
+    <article class="card" data-step="2">
+      <div class="fig"><img class="poster" onerror="this.style.display='none'" src="../img/v5_poster_2.png" alt="도트가 원적외선과 열에너지를 내보내는 3D 단면 렌더"><img class="snap" alt=""><span class="chip">FAR-INFRARED</span>
+        <div class="legend"><span><i style="background:#E2AE98"></i>피부</span><span><i style="background:#EDC75A"></i>지방</span><span><i style="background:#A8282E"></i>근육</span><span><i style="background:#C9605A"></i>심부</span></div></div>
+      <div class="txt"><div class="step">STEP 02</div><h3>원적외선 방사</h3><p>체온을 받은 도트 속 광물 소재가 원적외선과 열에너지를 내보냅니다.</p></div>
+    </article>
+    <article class="card" data-step="3">
+      <div class="fig"><img class="poster" onerror="this.style.display='none'" src="../img/v5_poster_3.png" alt="온기가 몸속 깊은 곳까지 전해지는 3D 단면 렌더"><img class="snap" alt=""><span class="chip">DEEP WARMTH</span>
+        <div class="legend"><span><i style="background:#E2AE98"></i>피부</span><span><i style="background:#EDC75A"></i>지방</span><span><i style="background:#A8282E"></i>근육</span><span><i style="background:#C9605A"></i>심부</span></div></div>
+      <div class="txt"><div class="step">STEP 03</div><h3>심부까지 전해지는 온기</h3><p>도트에서 나온 원적외선이 피부에 닿아 몸속 깊은 곳까지 온기가 전해지고, 벗은 뒤에도 한동안 남습니다.</p></div>
+    </article>
+  </div>
+  <p class="nbt">약 40여 가지 광물을 융합한 <b>NBT 융복합 기술</b></p>
+  <p class="note">* 원리와 지속 시간은 브랜드 설명이며, 체감 시점과 정도는 사람마다 다릅니다. 일러스트는 이해를 돕기 위한 개념도입니다.</p>
+</section>
+<div class="spacer"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const cards = [...document.querySelectorAll('.card')];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- WebGL availability ----------
+let renderer;
+try {
+  const test = document.createElement('canvas');
+  if (!(test.getContext('webgl2') || test.getContext('webgl'))) throw 0;
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+} catch (e) { renderer = null; }
+if (!renderer) { /* posters stay visible */ throw new Error('no webgl'); }
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = false;
+renderer.setClearColor(0xF4EFEE, 1);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+scene.environmentIntensity = 0.6;
+{ const c = document.createElement('canvas'); c.width = 64; c.height = 256; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, '#FBF8F7'); g.addColorStop(0.62, '#F1EAE9'); g.addColorStop(1, '#E2D7D6');
+  x.fillStyle = g; x.fillRect(0, 0, 64, 256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; scene.background = t; }
+
+const camera = new THREE.PerspectiveCamera(30, 4 / 3, 0.1, 50);
+
+// lights
+const key = new THREE.DirectionalLight(0xfff3ea, 2.1);
+key.position.set(3.2, 5.5, 3.8);
+key.castShadow = true;
+key.shadow.mapSize.set(1024, 1024);
+key.shadow.camera.left = -2.4; key.shadow.camera.right = 2.4;
+key.shadow.camera.top = 2.4; key.shadow.camera.bottom = -2.4;
+key.shadow.camera.near = 1; key.shadow.camera.far = 14;
+key.shadow.radius = 6; key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffd9cc, 1.0);
+rim.position.set(-4, 2.5, -3);
+scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd9c9c6, 0.35));
+
+// ---------- body profile ----------
+const Y0 = -1.0, Y1 = 0.88;
+const R = y => 0.86 + 0.26 * y * y + (y < 0 ? 0.05 * y * y : 0);
+const PHI0 = Math.PI / 2, PHIL = Math.PI * 1.5; // wedge [0, PI/2] removed (front-right)
+const SEG = 160;
+
+const root = new THREE.Group();
+root.scale.set(1, 1, 0.8);
+scene.add(root);
+
+// ---------- shared GLSL ----------
+const NOISE = /* glsl */`
+float h3(vec3 p){ p = fract(p*0.3183099+.1); p*=17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }
+float vnoise(vec3 x){ vec3 i=floor(x); vec3 f=fract(x); f=f*f*(3.0-2.0*f);
+  return mix(mix(mix(h3(i+vec3(0,0,0)),h3(i+vec3(1,0,0)),f.x),mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x),mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x),f.y),f.z); }
+float fbm(vec3 p){ float a=0.5,s=0.0; for(int i=0;i<4;i++){ s+=a*vnoise(p); p*=2.03; a*=0.5;} return s; }
+float cells(vec3 p){ vec3 i=floor(p), f=fract(p); float d=8.0;
+  for(int x=-1;x<=1;x++)for(int y=-1;y<=1;y++)for(int z=-1;z<=1;z++){ vec3 g=vec3(x,y,z);
+    vec3 o=vec3(h3(i+g),h3(i+g+11.3),h3(i+g+27.1)); vec3 r=g+o-f; d=min(d,dot(r,r)); }
+  return sqrt(d); }
+`;
+
+const U = {
+  uTime: { value: 0 },
+  uHeatFront: { value: 0 },   // 0..1 depth reached by warmth
+  uHeatAmt: { value: 0 },     // overall warmth intensity
+  uCore: { value: 0 },        // residual core glow
+  uWave: { value: 0 },        // wave rings on section faces
+  uWaveT: { value: 0 },
+  uSkinWarm: { value: 0 },    // warm band-zone on outer skin (step1)
+  uBandY: { value: 0 },
+};
+
+function bodyMaterial(isSection) {
+  const m = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, roughness: isSection ? 0.42 : 0.55, metalness: 0,
+    clearcoat: isSection ? 0.35 : 0.08, clearcoatRoughness: 0.5,
+    sheen: isSection ? 0.0 : 0.6, sheenRoughness: 0.6, sheenColor: new THREE.Color(0xffd2c2),
+    side: THREE.DoubleSide,
+  });
+  m.onBeforeCompile = (s) => {
+    Object.assign(s.uniforms, U);
+    s.uniforms.uSection = { value: isSection ? 1 : 0 };
+    s.vertexShader = s.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vObj;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position;');
+    s.fragmentShader = s.fragmentShader
+      .replace('#include <common>', `#include <common>
+varying vec3 vObj;
+uniform float uTime,uHeatFront,uHeatAmt,uCore,uWave,uWaveT,uSkinWarm,uBandY,uSection;
+${NOISE}
+vec3 gEmit; float gRough;
+vec3 tissue(vec3 p){
+  float Rr = 0.86 + 0.26*p.y*p.y + (p.y<0.0 ? 0.05*p.y*p.y : 0.0);
+  float rho = clamp(length(p.xz)/Rr, 0.0, 1.0);
+  float d = 1.0 - rho;                         // depth from skin surface
+  float n = fbm(p*9.0);
+  vec3 c; gRough = 0.5;
+  // core
+  vec3 core = mix(vec3(0.62,0.20,0.20), vec3(0.80,0.40,0.36), smoothstep(0.0,0.5,rho) + (n-0.5)*0.25);
+  // muscle with fibres along y (slightly twisted)
+  float fib = sin(p.y*150.0 + atan(p.z,p.x)*40.0 + n*9.0)*0.5+0.5;
+  float fib2 = sin(atan(p.z,p.x)*260.0 + n*14.0)*0.5+0.5;
+  vec3 muscle = mix(vec3(0.46,0.07,0.09), vec3(0.70,0.15,0.16), fib*0.55 + fib2*0.25 + n*0.3);
+  // fat lobules
+  float ce = cells(p*26.0);
+  vec3 fat = mix(vec3(0.96,0.80,0.36), vec3(0.98,0.88,0.55), smoothstep(0.15,0.6,ce));
+  fat = mix(fat, vec3(0.86,0.62,0.26), smoothstep(0.62,0.85,ce)*0.6);
+  // skin: dermis + epidermis
+  vec3 skin = mix(vec3(0.80,0.52,0.45), vec3(0.90,0.66,0.56), smoothstep(0.972,0.995,rho));
+  c = core;
+  c = mix(c, muscle, smoothstep(0.515,0.525,rho));
+  c = mix(c, fat,    smoothstep(0.755,0.765,rho));
+  c = mix(c, skin,   smoothstep(0.935,0.942,rho));
+  // fascia lines
+  float fl = max(max(1.0-smoothstep(0.0,0.006,abs(rho-0.52)), 1.0-smoothstep(0.0,0.005,abs(rho-0.76))), 1.0-smoothstep(0.0,0.004,abs(rho-0.938)));
+  c = mix(c, vec3(0.95,0.86,0.80), fl*0.75);
+  gRough = rho>0.76 && rho<0.935 ? 0.32 : 0.45;
+  // ---- emission: heat front from band inward ----
+  float vy = exp(-pow(p.y/0.62, 2.0));
+  float reach = 1.0 - smoothstep(uHeatFront-0.22, uHeatFront, d);
+  float grad = mix(1.0, 0.5, clamp(d,0.0,1.0)) * (0.7 + 0.45*fbm(p*4.0 + vec3(0.0,uTime*0.35,0.0)));
+  float edge = exp(-pow((d-uHeatFront)/0.04,2.0)) * smoothstep(0.02,0.08,uHeatFront) * (1.0 - smoothstep(0.85,1.0,uHeatFront));
+  float heat = (reach*grad + edge*0.9) * vy * uHeatAmt;
+  float coreG = (1.0 - smoothstep(0.16, 0.52, rho)) * exp(-pow(p.y/0.8,2.0)) * uCore * (0.8 + 0.4*fbm(p*3.0 + vec3(uTime*0.2)));
+  // wave rings travelling inward
+  float w = sin((d*4.5 - uWaveT)*6.2831)*0.5+0.5; w = pow(w, 4.0);
+  float wv = w * uWave * exp(-pow(p.y/0.55,2.0)) * (1.0 - smoothstep(0.55, 1.0, d));
+  gEmit = vec3(1.0,0.25,0.04)*heat*1.25 + vec3(1.0,0.22,0.05)*coreG*2.0 + vec3(1.0,0.45,0.15)*wv*0.9;
+  c = mix(c, c*vec3(0.95,0.72,0.6), clamp(heat+coreG,0.0,1.0)*0.45);
+  return c;
+}
+vec3 skinOuter(vec3 p){
+  float n = fbm(p*22.0); float n2 = vnoise(p*90.0);
+  vec3 c = mix(vec3(0.86,0.62,0.52), vec3(0.92,0.70,0.60), n) * (0.97 + n2*0.05);
+  gRough = 0.5 + n2*0.12;
+  float vy = exp(-pow((p.y)/0.55,2.0));
+  float heat = uHeatAmt * vy * smoothstep(0.0,0.15,uHeatFront);
+  float warm = uSkinWarm * exp(-pow((p.y)/0.45,2.0));
+  gEmit = vec3(1.0,0.36,0.10)*heat*0.6 + vec3(1.0,0.42,0.18)*warm*0.25 + vec3(1.0,0.34,0.12)*uCore*0.10*vy;
+  return c;
+}`)
+      .replace('vec4 diffuseColor = vec4( diffuse, opacity );',
+        'vec3 tcol = uSection > 0.5 ? tissue(vObj) : skinOuter(vObj); tcol = pow(tcol, vec3(2.2));\nvec4 diffuseColor = vec4( tcol, opacity );')
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = gRough;')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += gEmit;');
+  };
+  return m;
+}
+
+// outer skin lathe
+const prof = [];
+for (let i = 0; i <= 80; i++) { const y = Y0 + (Y1 - Y0) * i / 80; prof.push(new THREE.Vector2(R(y), y)); }
+const skinGeo = new THREE.LatheGeometry(prof, SEG, PHI0, PHIL);
+const skinMesh = new THREE.Mesh(skinGeo, bodyMaterial(false));
+skinMesh.castShadow = true; skinMesh.receiveShadow = true;
+root.add(skinMesh);
+
+// section faces: vertical cut planes + top/bottom caps
+function sectionShapeGeo() {
+  const sh = new THREE.Shape();
+  sh.moveTo(0, Y0);
+  for (let i = 0; i <= 60; i++) { const y = Y0 + (Y1 - Y0) * i / 60; sh.lineTo(R(y), y); }
+  sh.lineTo(0, Y1); sh.closePath();
+  return new THREE.ShapeGeometry(sh, 24);
+}
+function placeAtPhi(geo, phi) { geo.rotateY(phi - Math.PI / 2); return geo; }
+// subdivide section plane for better shading (ShapeGeometry fine since colour is per-fragment)
+const secMat = bodyMaterial(true);
+const faceA = new THREE.Mesh(placeAtPhi(sectionShapeGeo(), PHI0), secMat);       // +x direction plane
+const faceB = new THREE.Mesh(placeAtPhi(sectionShapeGeo(), 0.0), secMat);        // +z direction plane
+[faceA, faceB].forEach(m => { m.receiveShadow = true; m.castShadow = true; root.add(m); });
+function capGeo(y, phiStart, phiLen, rFn, segs = 120) {
+  const pos = [0, y, 0];
+  for (let i = 0; i <= segs; i++) { const a = phiStart + phiLen * i / segs; const r = rFn(y); pos.push(Math.sin(a) * r, y, Math.cos(a) * r); }
+  const idx = []; for (let i = 1; i <= segs; i++) idx.push(0, i, i + 1);
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+  // force normal up/down
+  const nrm = g.attributes.normal; const up = y > 0 ? 1 : -1; for (let i = 0; i < nrm.count; i++) nrm.setXYZ(i, 0, up, 0);
+  return g;
+}
+const capTop = new THREE.Mesh(capGeo(Y1, PHI0, PHIL, R), secMat); capTop.receiveShadow = true; root.add(capTop);
+const capBot = new THREE.Mesh(capGeo(Y0, PHI0, PHIL, R), secMat); root.add(capBot);
+
+// ---------- band ----------
+const BH = 0.34, GAP = 0.05, BT = 0.07;
+function noiseCanvas(sz, fn) {
+  const c = document.createElement('canvas'); c.width = c.height = sz; const x = c.getContext('2d');
+  const im = x.createImageData(sz, sz); for (let i = 0; i < sz * sz; i++) { const v = fn(i % sz, (i / sz) | 0); im.data[i * 4] = v[0]; im.data[i * 4 + 1] = v[1]; im.data[i * 4 + 2] = v[2]; im.data[i * 4 + 3] = 255; }
+  x.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+}
+// neoprene micro-texture normal map
+const neoN = noiseCanvas(256, () => { const a = (Math.random() - .5) * 70; const b = (Math.random() - .5) * 70; return [128 + a, 128 + b, 255]; });
+neoN.repeat.set(40, 4);
+const bandMat = new THREE.MeshPhysicalMaterial({ color: 0x151314, roughness: 0.78, metalness: 0, sheen: 1.0, sheenRoughness: 0.45,
+  sheenColor: new THREE.Color(0x4a4448), normalMap: neoN, normalScale: new THREE.Vector2(0.35, 0.35), clearcoat: 0.05, transparent: true, side: THREE.DoubleSide });
+const edgeMat = new THREE.MeshPhysicalMaterial({ color: 0x2a2627, roughness: 0.6, sheen: 0.6, sheenColor: new THREE.Color(0x6a6064), transparent: true });
+// closed rounded-rect profile (r,y)
+function bandProfile() {
+  const pts = []; const rad = 0.03;
+  const rin = y => R(y) + GAP, rout = y => R(y) + GAP + BT;
+  // inner side bottom->top
+  for (let i = 0; i <= 16; i++) { const y = -BH + rad + (2 * BH - 2 * rad) * i / 16; pts.push([rin(y), y]); }
+  for (let i = 1; i <= 8; i++) { const a = Math.PI + Math.PI * i / 8; const cy = BH - rad; const cx = (rin(cy) + rout(cy)) / 2; pts.push([cx + Math.cos(a) * (BT / 2), cy + rad * 0 + Math.sin(-a) * rad + 0]); }
+  for (let i = 16; i >= 0; i--) { const y = -BH + rad + (2 * BH - 2 * rad) * i / 16; pts.push([rout(y), y]); }
+  for (let i = 1; i <= 8; i++) { const a = Math.PI * i / 8; const cy = -BH + rad; const cx = (rin(cy) + rout(cy)) / 2; pts.push([cx + Math.cos(a) * (BT / 2), cy - Math.sin(a) * rad]); }
+  return pts;
+}
+const bp = bandProfile();
+const bandGroup = new THREE.Group(); root.add(bandGroup);
+const bandGeo = new THREE.LatheGeometry([...bp, bp[0]].map(p => new THREE.Vector2(p[0], p[1])), SEG, PHI0, PHIL);
+const band = new THREE.Mesh(bandGeo, bandMat); band.castShadow = true; band.receiveShadow = true; bandGroup.add(band);
+// binding (edge piping) rings
+for (const yy of [-BH + 0.012, BH - 0.012]) {
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(R(yy) + GAP + BT * 0.5, 0.016, 10, SEG, PHIL), edgeMat);
+  ring.rotation.x = Math.PI / 2; ring.rotation.z = -(PHI0 - Math.PI / 2) - 0; // align
+  ring.position.y = yy; ring.castShadow = true;
+  // torus lies in XY by default: rotate to XZ; arc start at +x. Need start at phi=PI/2 (dir +x) going to phi=2PI (dir +z) via -z,-x
+  ring.rotation.set(Math.PI / 2, 0, 0); // maps (x,y)->(x,0,y): angle t -> (cos t, 0, sin t)
+  // with arc t in [0,1.5PI]: +x -> +z ... wrong direction, mirror via scale
+  ring.scale.set(1, -1, 1);
+  bandGroup.add(ring);
+}
+// band end caps (section of the band at the wedge)
+function bandCap(phi) {
+  const sh = new THREE.Shape(); bp.forEach((p, i) => i ? sh.lineTo(p[0], p[1]) : sh.moveTo(p[0], p[1]));
+  const g = new THREE.ShapeGeometry(sh); placeAtPhi(g, phi);
+  const m = new THREE.Mesh(g, new THREE.MeshPhysicalMaterial({ color: 0x232021, roughness: 0.9, side: THREE.DoubleSide, transparent: true }));
+  bandGroup.add(m); return m;
+}
+const bandCaps = [bandCap(PHI0), bandCap(0.0001)];
+
+// dots: burgundy mineral dots on inner face, touching skin
+const ROWS = 4, DR = 0.046;
+const dotGeo = new THREE.SphereGeometry(DR, 18, 12);
+dotGeo.scale(0.62, 1, 1); // flattened toward the skin (local x = radial)
+const dotMat = new THREE.MeshPhysicalMaterial({ color: 0x8E1F3F, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25,
+  emissive: new THREE.Color(0xff2a12), emissiveIntensity: 0.0, transparent: true });
+const dotsList = [];
+const cols = Math.round(PHIL / 0.12);
+for (let r = 0; r < ROWS; r++) {
+  const y = -BH + 0.09 + (2 * BH - 0.18) * r / (ROWS - 1);
+  for (let c = 0; c <= cols; c++) {
+    const a = PHI0 + PHIL * (c + (r % 2 ? 0.5 : 0)) / (cols + 0.5);
+    dotsList.push({ a, y });
+  }
+}
+const dots = new THREE.InstancedMesh(dotGeo, dotMat, dotsList.length);
+const dm = new THREE.Matrix4(), dq = new THREE.Quaternion(), ds = new THREE.Vector3(1, 1, 1), dp = new THREE.Vector3();
+dotsList.forEach((d, i) => {
+  const rr = R(d.y) + GAP * 0.5;
+  dp.set(Math.sin(d.a) * rr, d.y, Math.cos(d.a) * rr);
+  dq.setFromAxisAngle(new THREE.Vector3(0, 1, 0), d.a - Math.PI / 2);
+  dm.compose(dp, dq, ds); dots.setMatrixAt(i, dm);
+});
+dots.castShadow = true;
+bandGroup.add(dots);
+bandGroup.traverse(o => { o.renderOrder = 2; });
+
+// ---------- ground ----------
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.ShadowMaterial({ opacity: 0.16 }));
+ground.rotation.x = -Math.PI / 2; ground.position.y = Y0 - 0.001; ground.receiveShadow = true; scene.add(ground);
+// soft contact AO blob
+const aoC = document.createElement('canvas'); aoC.width = aoC.height = 128; { const x = aoC.getContext('2d'); const g = x.createRadialGradient(64, 64, 10, 64, 64, 64); g.addColorStop(0, 'rgba(60,30,35,.55)'); g.addColorStop(.55, 'rgba(60,30,35,.18)'); g.addColorStop(1, 'rgba(60,30,35,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); }
+const ao = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 2.6), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(aoC), transparent: true, depthWrite: false }));
+ao.rotation.x = -Math.PI / 2; ao.position.y = Y0 + 0.002; scene.add(ao);
+
+// ---------- particles (step 1) ----------
+const spriteVS = /* glsl */`
+attribute vec3 aFrom; attribute vec3 aTo; attribute float aPhase; attribute float aSize;
+uniform float uTime, uPR, uAmt; varying float vA;
+void main(){
+  float t = fract(uTime*0.38 + aPhase);
+  float e = t*t*(3.0-2.0*t);
+  vec3 p = mix(aFrom, aTo, e);
+  p += normalize(vec3(aTo.x,0.0,aTo.z)+1e-4) * sin(t*3.14159)*0.04;
+  vec4 mv = modelViewMatrix*vec4(p,1.0);
+  gl_Position = projectionMatrix*mv;
+  gl_PointSize = aSize * uPR * (5.0 / -mv.z) * (1.0 - 0.45*e);
+  vA = smoothstep(0.0,0.18,t) * (1.0 - smoothstep(0.82,1.0,t)) * uAmt;
+}`;
+const spriteFS = /* glsl */`
+varying float vA; uniform vec3 uCol;
+void main(){ vec2 c = gl_PointCoord-0.5; float d = length(c); float a = exp(-d*d*28.0) + 0.35*exp(-d*d*90.0);
+  gl_FragColor = vec4(uCol*a*vA*1.1, 1.0); }`;
+const PN = 520;
+const pFrom = new Float32Array(PN * 3), pTo = new Float32Array(PN * 3), pPh = new Float32Array(PN), pSz = new Float32Array(PN);
+const faceDots = dotsList.filter(d => d.a < PHI0 + 0.02 || d.a > Math.PI * 2 - 0.25 || d.a < PHI0 + 0.3);
+for (let i = 0; i < PN; i++) {
+  const mode = Math.random();
+  let fx, fy, fz, tx, ty, tz;
+  const d = dotsList[(Math.random() * dotsList.length) | 0];
+  if (mode < 0.55) {
+    // from inside skin at a cut face, toward the nearest dot on that face
+    const onA = Math.random() < 0.5;
+    const phi = onA ? PHI0 : 0.0;
+    const row = (Math.random() * ROWS) | 0; const yy = -BH + 0.09 + (2 * BH - 0.18) * row / (ROWS - 1);
+    const rr = R(yy) * (0.80 + Math.random() * 0.16);
+    const off = 0.03; // slightly in front of face, inside wedge
+    const dir = [Math.sin(phi), Math.cos(phi)], nrm = onA ? [0, 1] : [1, 0];
+    fx = dir[0] * rr + nrm[0] * off; fz = dir[1] * rr + nrm[1] * off; fy = yy + (Math.random() - .5) * 0.12;
+    const rt = R(yy) + GAP * 0.5; tx = dir[0] * rt + nrm[0] * off; tz = dir[1] * rt + nrm[1] * off; ty = yy;
+  } else {
+    // from exposed skin above/below the band, sliding into the band edge
+    const a = PHI0 + Math.random() * 1.6 + (Math.random() < 0.5 ? 0 : PHIL - 1.6 - 0.2);
+    const up = Math.random() < 0.5 ? 1 : -1;
+    const ys = up * (BH + 0.05 + Math.random() * 0.4);
+    const rs = R(ys) + 0.012;
+    fx = Math.sin(a) * rs; fz = Math.cos(a) * rs; fy = ys;
+    const yt = up * (BH - 0.06); const rt = R(yt) + GAP * 0.4;
+    tx = Math.sin(a) * rt; tz = Math.cos(a) * rt; ty = yt;
+  }
+  pFrom.set([fx, fy, fz], i * 3); pTo.set([tx, ty, tz], i * 3); pPh[i] = Math.random(); pSz[i] = 5 + Math.random() * 9;
+}
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pFrom.slice(), 3));
+pGeo.setAttribute('aFrom', new THREE.BufferAttribute(pFrom, 3));
+pGeo.setAttribute('aTo', new THREE.BufferAttribute(pTo, 3));
+pGeo.setAttribute('aPhase', new THREE.BufferAttribute(pPh, 1));
+pGeo.setAttribute('aSize', new THREE.BufferAttribute(pSz, 1));
+const pMat = new THREE.ShaderMaterial({ vertexShader: spriteVS, fragmentShader: spriteFS, transparent: true, depthWrite: false,
+  blending: THREE.AdditiveBlending, uniforms: { uTime: { value: 0 }, uPR: { value: 1 }, uAmt: { value: 0 }, uCol: { value: new THREE.Color(1.0, 0.36, 0.08) } } });
+const particles = new THREE.Points(pGeo, pMat); particles.frustumCulled = false; particles.renderOrder = 3; root.add(particles);
+
+// ---------- wave shells (step 2) ----------
+const shellVS = /* glsl */`
+varying vec3 vN; varying vec3 vV; varying float vY;
+void main(){ vec4 wp = modelMatrix*vec4(position,1.0); vN = normalize(normalMatrix*normal);
+  vec4 mv = viewMatrix*wp; vV = normalize(-mv.xyz); vY = position.y; gl_Position = projectionMatrix*mv; }`;
+const shellFS = /* glsl */`
+varying vec3 vN; varying vec3 vV; varying float vY; uniform float uOp; uniform vec3 uCol; uniform float uH;
+void main(){ float f = pow(1.0-abs(dot(normalize(vN),normalize(vV))), 2.2);
+  float vy = 1.0 - smoothstep(uH*0.55, uH, abs(vY));
+  gl_FragColor = vec4(uCol*(0.08+f)*uOp*vy, 1.0); }`;
+const shells = [];
+for (let i = 0; i < 4; i++) {
+  const pts = []; for (let k = 0; k <= 24; k++) { const y = -0.5 + 1.0 * k / 24; pts.push(new THREE.Vector2(R(y), y)); }
+  const g = new THREE.LatheGeometry(pts, 96, PHI0, PHIL);
+  const m = new THREE.ShaderMaterial({ vertexShader: shellVS, fragmentShader: shellFS, transparent: true, depthWrite: false, depthTest: false,
+    blending: THREE.AdditiveBlending, side: THREE.BackSide, uniforms: { uOp: { value: 0 }, uCol: { value: new THREE.Color(1.0, 0.45, 0.18) }, uH: { value: 0.5 } } });
+  const s = new THREE.Mesh(g, m); s.renderOrder = 1; s.visible = false; root.add(s); shells.push(s);
+}
+
+// ---------- state per step ----------
+const ease = t => t * t * (3 - 2 * t);
+const clamp01 = t => Math.max(0, Math.min(1, t));
+const ss = (a, b, t) => ease(clamp01((t - a) / (b - a)));
+const STEP_LEN = { 1: 7.5, 2: 6.0, 3: 10.0 };
+function setCamera(t, step) {
+  const base = Math.PI / 4 + 0.22;
+  const th = base + Math.sin(t * 0.22) * 0.26;
+  const D = 5.6, h = step === 3 ? 1.95 : 1.65;
+  camera.position.set(Math.sin(th) * D, h, Math.cos(th) * D * 1.0);
+  camera.lookAt(0, -0.06, 0);
+}
+function applyStep(step, T) {
+  const L = STEP_LEN[step]; const t = T % L;
+  const fadeIn = ss(0, 0.6, t), fadeOut = 1 - ss(L - 0.7, L, t);
+  const env = fadeIn * fadeOut;
+  U.uTime.value = T;
+  // defaults
+  U.uHeatFront.value = 0; U.uHeatAmt.value = 0; U.uCore.value = 0; U.uWave.value = 0; U.uSkinWarm.value = 0;
+  particles.visible = false; shells.forEach(s => s.visible = false);
+  bandGroup.position.y = 0; setBandOpacity(1);
+  dotMat.emissiveIntensity = 0;
+  if (step === 1) {
+    particles.visible = true;
+    pMat.uniforms.uTime.value = T; pMat.uniforms.uAmt.value = env * 1.0;
+    const charge = ss(0.4, 5.5, t) * fadeOut;
+    dotMat.emissiveIntensity = 0.05 + 1.1 * charge + 0.12 * Math.sin(T * 5) * charge;
+    U.uSkinWarm.value = 0.6 * env;
+  } else if (step === 2) {
+    const pulse = 0.5 + 0.5 * Math.sin(T * 4.2);
+    dotMat.emissiveIntensity = (0.6 + 1.1 * pulse) * env;
+    U.uWave.value = 1.0 * env; U.uWaveT.value = T * 0.75;
+    U.uHeatAmt.value = 0.25 * env; U.uHeatFront.value = 0.12;
+    const period = 1.6;
+    shells.forEach((s, i) => {
+      const k = ((T / period) + i / shells.length) % 1;
+      const sc = 1.0 + GAP + BT * 0.4 - k * 0.6; // from band radius inward
+      s.visible = true; s.scale.set(sc, 1 - k * 0.15, sc);
+      s.material.uniforms.uOp.value = Math.sin(Math.PI * k) * 0.7 * env;
+    });
+  } else if (step === 3) {
+    const front = ss(0.3, 4.6, t);
+    U.uHeatFront.value = front * 1.02;
+    const off = ss(5.0, 7.0, t);
+    U.uHeatAmt.value = (1.0 * ss(0.2, 1.0, t) * (1 - off * 0.7)) * fadeOut;
+    U.uCore.value = ss(3.0, 5.0, t) * (0.85 + 0.15 * Math.sin(T * 1.8)) * fadeOut;
+    dotMat.emissiveIntensity = (0.9 + 0.35 * Math.sin(T * 4)) * (1 - off) * fadeIn;
+    bandGroup.position.y = -off * 0.75;
+    setBandOpacity(1 - ss(5.4, 7.0, t));
+  }
+  setCamera(T, step);
+}
+let lastOp = -1;
+function setBandOpacity(o) {
+  if (o === lastOp) return; lastOp = o;
+  bandGroup.visible = o > 0.01;
+  [bandMat, edgeMat, dotMat, ...bandCaps.map(c => c.material)].forEach(m => { m.opacity = o; m.depthWrite = o > 0.98; });
+}
+
+// ---------- shared renderer across cards ----------
+const states = cards.map((c, i) => ({ el: c, fig: c.querySelector('.fig'), snap: c.querySelector('.snap'), step: i + 1, t: i === 2 ? 0 : 0.0, ratio: 0 }));
+let active = null, running = false, lastNow = 0;
+const canvas = renderer.domElement;
+
+function sizeTo(fig) {
+  const w = fig.clientWidth, h = fig.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  pMat.uniforms.uPR.value = renderer.getPixelRatio() * (h / 300);
+}
+function renderState(st) { applyStep(st.step, st.t); renderer.render(scene, camera); }
+function snapshot(st) { try { st.snap.src = canvas.toDataURL('image/jpeg', 0.86); st.snap.style.opacity = 1; } catch (e) { } }
+function activate(st) {
+  if (active === st) return;
+  if (active) { sizeTo(active.fig); renderState(active); snapshot(active); }
+  active = st;
+  if (!st) return;
+  st.fig.insertBefore(canvas, st.fig.querySelector('.chip'));
+  sizeTo(st.fig);
+}
+function loop(now) {
+  if (!active) { running = false; return; }
+  const dt = Math.min(0.05, (now - lastNow) / 1000 || 0); lastNow = now;
+  active.t += dt;
+  renderState(active);
+  requestAnimationFrame(loop);
+}
+function pick() {
+  let best = null; states.forEach(s => { if (s.ratio > 0.05 && (!best || s.ratio > best.ratio)) best = s; });
+  if (reduce) { // static, representative frame per card
+    states.forEach(s => { if (s.ratio > 0 && !s.done) { activate(s); s.t = { 1: 5.2, 2: 1.0, 3: 4.6 }[s.step]; sizeTo(s.fig); renderState(s); s.done = true; } });
+    return;
+  }
+  activate(best);
+  if (best && !running) { running = true; lastNow = performance.now(); requestAnimationFrame(loop); }
+}
+const io = new IntersectionObserver(es => { es.forEach(e => { const s = states.find(x => x.el.contains(e.target)); s.ratio = e.isIntersecting ? e.intersectionRatio : 0; }); pick(); },
+  { threshold: [0, 0.05, 0.15, 0.3, 0.5, 0.7, 0.9, 1] });
+states.forEach(s => io.observe(s.fig));
+addEventListener('resize', () => { if (active) sizeTo(active.fig); });
+window.__v5 = { states, setT: (i, t) => { states[i].t = t; } };
+</script>
+</body>
+</html>

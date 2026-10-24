@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이온도 원리 · V1 열화상</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{max-width:480px;margin:0 auto;background:#F3F1F1;font-family:'Pretendard Variable',Pretendard,sans-serif;word-break:keep-all;color:#1b1416;-webkit-font-smoothing:antialiased}
+  .vlabel{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:50;background:rgba(20,12,16,.82);color:#fff;font-size:12px;font-weight:700;letter-spacing:.02em;padding:6px 12px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .how{background:#F3F1F1;padding:76px 20px 52px}
+  .how .eyebrow{font-size:15px;color:#7A6C71;text-align:center;font-weight:500}
+  .how h2{font-size:34px;font-weight:800;line-height:1.3;text-align:center;margin-top:10px;letter-spacing:-.02em}
+  .how h2 strong{color:#8E1F3F;font-weight:800}
+  .steps{margin-top:36px;display:flex;flex-direction:column;gap:20px}
+  .card{background:#fff;border-radius:20px;box-shadow:0 10px 26px rgba(80,20,40,.08);overflow:hidden}
+  .fig{position:relative;aspect-ratio:4/3;background:#07040c;overflow:hidden}
+  .fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .txt{padding:22px 22px 26px}
+  .step{font-size:11.5px;font-weight:800;color:#8E1F3F;letter-spacing:.12em}
+  .card h3{font-size:21px;font-weight:800;margin-top:6px;letter-spacing:-.01em}
+  .card p{font-size:14.5px;color:#333;line-height:1.65;margin-top:8px}
+  .nbt{margin-top:30px;font-size:13px;color:#6b6266;text-align:center}
+  .nbt b{color:#8E1F3F;font-weight:800}
+  .note{margin-top:10px;font-size:12px;color:#8d8488;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="vlabel">V1 · 열화상 카메라</div>
+
+<section class="how">
+  <p class="eyebrow">오직 마이온도에서 확인할 수 있는</p>
+  <h2>전기 없이 따뜻해지는<br><strong>마이온도의 원리</strong></h2>
+
+  <div class="steps">
+    <article class="card">
+      <div class="fig"><canvas data-mode="1" aria-label="열화상 연출: 체온이 밴드로 옮겨가며 밴드 부위가 점점 따뜻해지는 모습"></canvas></div>
+      <div class="txt">
+        <div class="step">STEP 01</div>
+        <h3>체온 복사</h3>
+        <p>밴드 안쪽 버건디 도트가 맨살에 닿아, 피부의 온기를 받아들입니다.</p>
+      </div>
+    </article>
+    <article class="card">
+      <div class="fig"><canvas data-mode="2" aria-label="열화상 연출: 밴드에서 열이 파동처럼 허리 주변으로 퍼지는 모습"></canvas></div>
+      <div class="txt">
+        <div class="step">STEP 02</div>
+        <h3>원적외선 방사</h3>
+        <p>체온을 받은 도트 속 광물 소재가 원적외선과 열에너지를 내보냅니다.</p>
+      </div>
+    </article>
+    <article class="card">
+      <div class="fig"><canvas data-mode="3" aria-label="열화상 연출: 온기가 몸 안쪽으로 퍼지고 밴드를 벗은 뒤에도 남아 있는 모습"></canvas></div>
+      <div class="txt">
+        <div class="step">STEP 03</div>
+        <h3>심부까지 전해지는 온기</h3>
+        <p>도트에서 나온 원적외선이 피부에 닿아 몸속 깊은 곳까지 온기가 전해지고, 벗은 뒤에도 한동안 남습니다.</p>
+      </div>
+    </article>
+  </div>
+
+  <p class="nbt">약 40여 가지 광물을 융합한 <b>NBT 융복합 기술</b></p>
+  <p class="note">* 원리와 지속 시간은 브랜드 설명이며, 체감 시점과 정도는 사람마다 다릅니다. 일러스트는 이해를 돕기 위한 개념도입니다.</p>
+</section>
+
+<script>
+(function(){
+  'use strict';
+  var W = 320, H = 240, N = W * H;
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MONO = '600 {s}px ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace';
+  var KR = '700 {s}px "Pretendard Variable",Pretendard,sans-serif';
+  function font(tpl, s){ return tpl.replace('{s}', s); }
+
+  /* ---------- ironbow palette LUT ---------- */
+  var STOPS = [
+    [0.00,  2,  0,  8],[0.10, 16,  4, 52],[0.22, 52,  6,110],[0.34,104, 10,140],
+    [0.45,158, 18,128],[0.55,204, 40, 84],[0.64,232, 80, 34],[0.73,246,128, 12],
+    [0.82,252,176, 22],[0.90,254,218, 70],[0.96,255,244,170],[1.00,255,255,240]
+  ];
+  var LUTN = 1024, LUT = new Uint8Array(LUTN * 3);
+  (function(){
+    for (var i = 0; i < LUTN; i++){
+      var v = i / (LUTN - 1), k = 0;
+      while (k < STOPS.length - 2 && v > STOPS[k+1][0]) k++;
+      var a = STOPS[k], b = STOPS[k+1], f = (v - a[0]) / (b[0] - a[0]);
+      f = Math.max(0, Math.min(1, f));
+      for (var c = 0; c < 3; c++) LUT[i*3+c] = Math.round(a[c+1] + (b[c+1] - a[c+1]) * f);
+    }
+  })();
+  function lutCss(v){ var i = Math.max(0, Math.min(LUTN-1, Math.round(v*(LUTN-1))))*3; return 'rgb('+LUT[i]+','+LUT[i+1]+','+LUT[i+2]+')'; }
+
+  /* ---------- helpers ---------- */
+  function clamp(v,a,b){ return v < a ? a : v > b ? b : v; }
+  function smooth(e0,e1,x){ var t = clamp((x-e0)/(e1-e0),0,1); return t*t*(3-2*t); }
+  var seed = 1337;
+  function rnd(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+
+  function valueNoise(cell){
+    var gw = Math.ceil(W / cell) + 2, gh = Math.ceil(H / cell) + 2, g = new Float32Array(gw*gh), out = new Float32Array(N);
+    for (var i = 0; i < g.length; i++) g[i] = rnd();
+    for (var y = 0; y < H; y++){
+      var fy = y / cell, iy = fy|0, ty = fy - iy; ty = ty*ty*(3-2*ty);
+      for (var x = 0; x < W; x++){
+        var fx = x / cell, ix = fx|0, tx = fx - ix; tx = tx*tx*(3-2*tx);
+        var a = g[iy*gw+ix], b = g[iy*gw+ix+1], c = g[(iy+1)*gw+ix], d = g[(iy+1)*gw+ix+1];
+        out[y*W+x] = (a + (b-a)*tx) + ((c + (d-c)*tx) - (a + (b-a)*tx)) * ty;
+      }
+    }
+    return out;
+  }
+  // chamfer distance transform (px) to cells where mask > .5
+  function distance(mask, inside){
+    var d = new Float32Array(N), INF = 1e6, x, y, i;
+    for (i = 0; i < N; i++) d[i] = ((mask[i] > .5) !== !!inside) ? 0 : INF;
+    var A = 1, B = 1.4142;
+    for (y = 0; y < H; y++) for (x = 0; x < W; x++){
+      i = y*W+x; var v = d[i]; if (!v) continue;
+      if (x > 0) v = Math.min(v, d[i-1] + A);
+      if (y > 0){ v = Math.min(v, d[i-W] + A); if (x > 0) v = Math.min(v, d[i-W-1] + B); if (x < W-1) v = Math.min(v, d[i-W+1] + B); }
+      d[i] = v;
+    }
+    for (y = H-1; y >= 0; y--) for (x = W-1; x >= 0; x--){
+      i = y*W+x; var u = d[i]; if (!u) continue;
+      if (x < W-1) u = Math.min(u, d[i+1] + A);
+      if (y < H-1){ u = Math.min(u, d[i+W] + A); if (x < W-1) u = Math.min(u, d[i+W+1] + B); if (x > 0) u = Math.min(u, d[i+W-1] + B); }
+      d[i] = u;
+    }
+    return d;
+  }
+  function loadImg(src){
+    return new Promise(function(res, rej){ var im = new Image(); im.onload = function(){ res(im); }; im.onerror = rej; im.src = src; });
+  }
+
+  /* ---------- scene configs (map coords 320x240) ---------- */
+  var CFG = {
+    1: { src: '../img/v1_side_map.png', view: [0, 0, 320, 240], loop: 8.0,
+         boxes: [ { id:'SKIN', x:128, y:92, r:5 }, { id:'BAND', x:150, y:136, r:9 } ], spot: [150,136] },
+    2: { src: '../img/v1_side_map.png', view: [40, 46, 240, 180], loop: 2.6, spot: [146,132] },
+    3: { src: '../img/v1_front_map.png', view: [10, 8, 300, 225], loop: 10.0, spot: [160,168] }
+  };
+
+  function Cam(canvas){
+    this.cv = canvas; this.ctx = canvas.getContext('2d');
+    this.mode = +canvas.getAttribute('data-mode'); this.cfg = CFG[this.mode];
+    this.low = document.createElement('canvas'); this.low.width = W; this.low.height = H;
+    this.lctx = this.low.getContext('2d'); this.img = this.lctx.createImageData(W, H);
+    this.T = new Float32Array(N); this.ready = false; this.running = false;
+    this.t0 = 0; this.last = 0; this.raf = 0; this.fail = false;
+    this.fpn = new Float32Array(W); for (var i = 0; i < W; i++) this.fpn[i] = (rnd() - .5) * 0.012;
+  }
+  Cam.prototype.init = function(){
+    var self = this;
+    return loadImg(this.cfg.src).then(function(im){
+      var c = document.createElement('canvas'); c.width = W; c.height = H;
+      var x = c.getContext('2d'); x.drawImage(im, 0, 0, W, H);
+      var px;
+      try { px = x.getImageData(0, 0, W, H).data; } catch(e){ self.fail = true; self.photo = im; self.ready = true; self.resize(); self.draw(0); return; }
+      var base = new Float32Array(N), band = new Float32Array(N), body = new Float32Array(N);
+      for (var i = 0; i < N; i++){ base[i] = px[i*4]/255; band[i] = px[i*4+1]/255; body[i] = px[i*4+2]/255; }
+      self.base = base; self.band = band; self.body = body;
+      self.dOut = distance(band, false);           // distance outside band
+      self.dIn = distance(band, true);             // distance inside band to its edge
+      var mx = 0; for (i = 0; i < N; i++) if (band[i] > .5 && self.dIn[i] > mx) mx = self.dIn[i];
+      self.maxIn = mx || 1;
+      self.n1 = valueNoise(22); self.n2 = valueNoise(7);
+      // band centroid
+      var sx = 0, sy = 0, sw = 0;
+      for (var y = 0; y < H; y++) for (var xx = 0; xx < W; xx++){ var b = band[y*W+xx]; sx += xx*b; sy += y*b; sw += b; }
+      self.cx = sx/sw; self.cy = sy/sw;
+      // per-pixel distance from centroid (for core glow)
+      self.dC = new Float32Array(N);
+      for (y = 0; y < H; y++) for (xx = 0; xx < W; xx++){ var dx = xx - self.cx, dy = (y - self.cy) * 1.25; self.dC[y*W+xx] = Math.sqrt(dx*dx + dy*dy); }
+      self.halo = new Float32Array(N); for (i = 0; i < N; i++) self.halo[i] = Math.exp(-self.dOut[i] / 20);
+      self.ready = true; self.resize(); self.draw(REDUCED ? self.staticTime() : 0);
+    });
+  };
+  Cam.prototype.staticTime = function(){ return this.mode === 1 ? 6.6 : this.mode === 2 ? 1.1 : 7.2; };
+  Cam.prototype.resize = function(){
+    var r = this.cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.cw = Math.max(1, r.width); this.ch = Math.max(1, r.height); this.dpr = dpr;
+    this.cv.width = Math.round(this.cw * dpr); this.cv.height = Math.round(this.ch * dpr);
+  };
+
+  /* ---------- heat field per step ---------- */
+  Cam.prototype.field = function(t){
+    var T = this.T, base = this.base, band = this.band, body = this.body, n1 = this.n1, n2 = this.n2;
+    var dOut = this.dOut, dIn = this.dIn, halo = this.halo, i, b, v;
+    var drift = (t * 6) | 0, st = {};
+    if (this.mode === 1){
+      // body heat soaks into the cool neoprene band, from the skin-contact edges inward
+      var p = smooth(0.7, 6.0, t);
+      st.p = p;
+      for (i = 0; i < N; i++){
+        v = base[i]; b = band[i];
+        if (b > 0.01){
+          var nz = n1[i], depth = dIn[i] / this.maxIn;
+          var lp = clamp(p * 1.55 - depth * 0.55 - (1 - nz) * 0.22, 0, 1);
+          lp = lp*lp*(3-2*lp);
+          var cool = 0.29 + 0.05 * nz + 0.02 * n2[i];
+          var warm = 0.70 + 0.06 * nz + 0.02 * n2[i];
+          v = v * (1 - b) + (cool + (warm - cool) * lp) * b;
+        } else if (body[i] > 0.3 && dOut[i] < 14){
+          // skin right next to the cool band reads slightly lower at first
+          v -= (1 - p) * 0.06 * (1 - dOut[i] / 14) * body[i];
+        }
+        T[i] = v;
+      }
+    } else if (this.mode === 2){
+      // band glows hot; pulses travel outward over the waist
+      var pulse = 0.5 + 0.5 * Math.sin(t / this.cfg.loop * Math.PI * 2);
+      var R = 95, per = this.cfg.loop;
+      var r0 = ((t / per) % 1) * R, r1 = ((t / per + 1/3) % 1) * R, r2 = ((t / per + 2/3) % 1) * R;
+      var a0 = Math.pow(1 - r0/R, 1.6), a1 = Math.pow(1 - r1/R, 1.6), a2 = Math.pow(1 - r2/R, 1.6);
+      for (i = 0; i < N; i++){
+        v = base[i]; b = band[i];
+        var bd = body[i], d = dOut[i];
+        if (d < R + 10){
+          var w = 0.32 + 0.68 * bd;
+          var e0 = d - r0, e1 = d - r1, e2 = d - r2;
+          var f0 = e0 + 7, f1 = e1 + 7, f2 = e2 + 7;
+          var ring = a0 * (Math.exp(-e0*e0/16) - 0.55 * Math.exp(-f0*f0/22))
+                   + a1 * (Math.exp(-e1*e1/16) - 0.55 * Math.exp(-f1*f1/22))
+                   + a2 * (Math.exp(-e2*e2/16) - 0.55 * Math.exp(-f2*f2/22));
+          v += (0.09 * halo[i] + 0.19 * ring * (0.7 + 0.6 * n2[i])) * w;
+        }
+        if (b > 0.01){
+          var hot = 0.85 + 0.07 * n1[i] + 0.03 * n2[i] + 0.05 * pulse - 0.05 * Math.exp(-dIn[i] / 3);
+          v = v * (1 - b) + hot * b;
+        }
+        T[i] = v;
+      }
+      st.pulse = pulse;
+    } else {
+      // warmth spreads around/into the torso; after removal an imprint lingers
+      var L = this.cfg.loop, OFF = 5.0;
+      var grow = smooth(0.2, 4.6, Math.min(t, OFF));
+      var off = smooth(OFF, OFF + 0.9, t);
+      var decay = t > OFF ? Math.exp(-(t - OFF) / 6.5) : 1;
+      var linger = 1 - off * (1 - (0.62 + 0.38 * decay));
+      var reach = 6 + 46 * grow, core = 26 + 46 * grow;
+      for (i = 0; i < N; i++){
+        v = base[i]; b = band[i];
+        var bd2 = body[i];
+        if (bd2 > 0.05){
+          var sp = Math.exp(-dOut[i] / reach) * (0.8 + 0.4 * n1[i]);
+          var cg = Math.exp(-(this.dC[i] * this.dC[i]) / (2 * core * core));
+          v += (0.15 * sp + 0.09 * cg) * grow * linger * bd2;
+        }
+        if (b > 0.01){
+          var hot2 = 0.88 + 0.05 * n1[i] + 0.02 * n2[i];
+          var imprint = 0.86 + 0.09 * decay + 0.03 * n1[i] + 0.012 * n2[i] - 0.03 * (1 - dIn[i] / this.maxIn);
+          v = v * (1 - b) + (hot2 * (1 - off) + imprint * off) * b;
+        }
+        T[i] = v;
+      }
+      st.off = off; st.grow = grow;
+    }
+    return st;
+  };
+
+  Cam.prototype.paint = function(t, animated){
+    var T = this.T, d = this.img.data, fpn = this.fpn, i = 0, j = 0, x, frameSeed = (t * 1000) | 0;
+    for (var y = 0; y < H; y++){
+      var row = (animated ? (Math.sin(y * 0.9 + frameSeed * 0.013) * 0.004) : 0);
+      for (x = 0; x < W; x++, i++, j += 4){
+        var v = T[i] + fpn[x] + row;
+        if (animated) v += (Math.random() - 0.5) * 0.026;
+        var k = (v <= 0 ? 0 : v >= 1 ? LUTN - 1 : (v * (LUTN - 1)) | 0) * 3;
+        d[j] = LUT[k]; d[j+1] = LUT[k+1]; d[j+2] = LUT[k+2]; d[j+3] = 255;
+      }
+    }
+    this.lctx.putImageData(this.img, 0, 0);
+  };
+
+  /* ---------- HUD ---------- */
+  function corners(c, x, y, w, h, l){
+    c.beginPath();
+    c.moveTo(x, y + l); c.lineTo(x, y); c.lineTo(x + l, y);
+    c.moveTo(x + w - l, y); c.lineTo(x + w, y); c.lineTo(x + w, y + l);
+    c.moveTo(x + w, y + h - l); c.lineTo(x + w, y + h); c.lineTo(x + w - l, y + h);
+    c.moveTo(x + l, y + h); c.lineTo(x, y + h); c.lineTo(x, y + h - l);
+    c.stroke();
+  }
+  function txt(c, s, x, y, f, align, col){
+    c.font = f; c.textAlign = align || 'left'; c.textBaseline = 'middle';
+    c.fillStyle = 'rgba(0,0,0,.55)'; c.fillText(s, x + 0.8, y + 0.8);
+    c.fillStyle = col || 'rgba(255,255,255,.92)'; c.fillText(s, x, y);
+  }
+  Cam.prototype.sample = function(mx, my, r){
+    var s = 0, n = 0;
+    for (var y = Math.max(0, my - r); y <= Math.min(H-1, my + r); y++)
+      for (var x = Math.max(0, mx - r); x <= Math.min(W-1, mx + r); x++){ s += this.T[y*W+x]; n++; }
+    return s / n;
+  };
+  Cam.prototype.hud = function(t, st, animated){
+    var c = this.ctx, w = this.cw, h = this.ch, v = this.cfg.view, sc = w / v[2];
+    var toX = function(mx){ return (mx - v[0]) * sc; }, toY = function(my){ return (my - v[1]) * sc; };
+    c.lineWidth = 1.4; c.strokeStyle = 'rgba(255,255,255,.85)';
+    corners(c, 10, 10, w - 20, h - 20, 16);
+
+    // top bar
+    txt(c, 'IR  ·  IRONBOW', 22, 25, font(MONO, 10.5));
+    var blink = !animated || ((t * 1.4) % 1) < 0.62;
+    if (blink){ c.fillStyle = '#ff3b3b'; c.beginPath(); c.arc(w - 66, 25, 3.6, 0, Math.PI*2); c.fill(); }
+    txt(c, 'REC', w - 58, 25, font(MONO, 10.5));
+
+    // scale bar (relative)
+    var bx = w - 26, by0 = 46, by1 = h - 46, bw = 7;
+    var g = c.createLinearGradient(0, by1, 0, by0);
+    for (var k = 0; k <= 10; k++) g.addColorStop(k/10, lutCss(0.08 + k/10 * 0.92));
+    c.fillStyle = g; c.fillRect(bx, by0, bw, by1 - by0);
+    c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 1; c.strokeRect(bx - .5, by0 - .5, bw + 1, by1 - by0 + 1);
+    txt(c, 'HIGH', bx + bw/2, by0 - 9, font(MONO, 8.5), 'center');
+    txt(c, 'LOW', bx + bw/2, by1 + 9, font(MONO, 8.5), 'center');
+
+    var sp = this.cfg.spot, spv = this.sample(sp[0], sp[1], 3);
+    var my = by1 - clamp((spv - 0.08) / 0.92, 0, 1) * (by1 - by0);
+    c.fillStyle = '#fff'; c.beginPath(); c.moveTo(bx - 3, my); c.lineTo(bx - 9, my - 4.5); c.lineTo(bx - 9, my + 4.5); c.closePath(); c.fill();
+
+    if (this.mode === 1){
+      var self = this;
+      this.cfg.boxes.forEach(function(bxx){
+        var cx = toX(bxx.x), cy = toY(bxx.y), rr = bxx.r * sc + 6, val = self.sample(bxx.x, bxx.y, bxx.r);
+        c.strokeStyle = 'rgba(255,255,255,.95)'; c.lineWidth = 1.3;
+        corners(c, cx - rr, cy - rr * .72, rr * 2, rr * 1.44, 5);
+        // tag + relative level bar
+        var tx = bxx.id === 'SKIN' ? cx - rr - 66 : cx + rr + 8, ty = cy - rr * .72;
+        if (bxx.id === 'SKIN'){ tx = cx + rr + 8; ty = cy - rr * .72 - 6; }
+        c.fillStyle = 'rgba(8,4,14,.55)'; c.fillRect(tx, ty, 62, 22);
+        txt(c, bxx.id, tx + 5, ty + 7, font(MONO, 8.5));
+        c.fillStyle = 'rgba(255,255,255,.22)'; c.fillRect(tx + 5, ty + 14, 52, 3);
+        c.fillStyle = lutCss(clamp(val, 0, 1)); c.fillRect(tx + 5, ty + 14, 52 * clamp((val - 0.15) / 0.75, 0, 1), 3);
+      });
+      // heat-flow hint arrow: skin -> band
+      var a0x = toX(128) , a0y = toY(100), a1y = toY(122);
+      c.strokeStyle = 'rgba(255,255,255,' + (0.35 + 0.5 * (1 - st.p)) + ')'; c.lineWidth = 1.3; c.setLineDash([3, 3]);
+      c.lineDashOffset = -t * 14; c.beginPath(); c.moveTo(a0x, a0y); c.lineTo(a0x + 6, a1y); c.stroke(); c.setLineDash([]);
+      txt(c, '체온 → 밴드', 22, h - 25, font(KR, 11));
+    } else if (this.mode === 2){
+      var sx = toX(sp[0]), sy = toY(sp[1]);
+      c.strokeStyle = 'rgba(255,255,255,.95)'; c.lineWidth = 1.3;
+      c.beginPath(); c.moveTo(sx - 13, sy); c.lineTo(sx - 4, sy); c.moveTo(sx + 4, sy); c.lineTo(sx + 13, sy);
+      c.moveTo(sx, sy - 13); c.lineTo(sx, sy - 4); c.moveTo(sx, sy + 4); c.lineTo(sx, sy + 13); c.stroke();
+      c.beginPath(); c.arc(sx, sy, 2, 0, Math.PI*2); c.stroke();
+      c.fillStyle = 'rgba(8,4,14,.55)'; c.fillRect(sx + 16, sy - 20, 54, 16);
+      txt(c, 'Sp1  MAX', sx + 20, sy - 12, font(MONO, 8.5));
+      txt(c, '원적외선 · 열에너지 방사', 22, h - 25, font(KR, 11));
+    } else {
+      var on = st.off < 0.5;
+      c.fillStyle = 'rgba(8,4,14,.55)'; c.fillRect(20, 38, on ? 64 : 92, 20);
+      if (on){ c.fillStyle = '#ff6a3d'; c.beginPath(); c.arc(30, 48, 3.4, 0, Math.PI*2); c.fill(); }
+      else { c.strokeStyle = '#fff'; c.lineWidth = 1.2; c.beginPath(); c.arc(30, 48, 3.2, 0, Math.PI*2); c.stroke(); }
+      txt(c, on ? '착용 중' : '벗은 뒤 · 잔열', 39, 48.5, font(KR, 11));
+      // core marker
+      var ccx = toX(this.cx), ccy = toY(this.cy - 2);
+      c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 1.1; c.setLineDash([2.5, 3]);
+      var rr2 = (18 + 24 * st.grow) * sc;
+      c.beginPath(); c.ellipse(ccx, ccy, rr2, rr2 * 0.8, 0, 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
+      txt(c, '몸속 깊은 곳까지 · 온기 유지', 22, h - 25, font(KR, 11));
+    }
+    txt(c, '상대 온도 · 개념 연출', w - 40, h - 25, font(KR, 9.5), 'right', 'rgba(255,255,255,.7)');
+  };
+
+  Cam.prototype.draw = function(t){
+    var c = this.ctx, w = this.cw, h = this.ch, animated = !REDUCED;
+    c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    if (this.fail){ // file:// fallback: grayscale photo
+      c.filter = 'grayscale(1) contrast(1.2)'; c.drawImage(this.photo, 0, 0, w, h); c.filter = 'none'; return;
+    }
+    var st = this.field(t);
+    this.paint(t, animated);
+    var v = this.cfg.view;
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+    c.drawImage(this.low, v[0], v[1], v[2], v[3], 0, 0, w, h);
+    // lens vignette
+    var vg = c.createRadialGradient(w/2, h/2, Math.min(w,h)*0.35, w/2, h/2, Math.max(w,h)*0.72);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.42)');
+    c.fillStyle = vg; c.fillRect(0, 0, w, h);
+    // faint scanlines
+    c.fillStyle = 'rgba(0,0,0,.07)';
+    for (var y = 0; y < h; y += 3) c.fillRect(0, y, w, 1);
+    this.hud(t, st, animated);
+    // loop-reset: camera shutter calibration (NUC) flash
+    if (animated && this.mode !== 2){
+      var L = this.cfg.loop, e = L - t;
+      if (e < 0.45){
+        var a = Math.sin((1 - e / 0.45) * Math.PI);
+        c.fillStyle = 'rgba(60,46,70,' + (0.85 * a) + ')'; c.fillRect(0, 0, w, h);
+        if (a > 0.3) txt(c, 'CAL', w/2, h/2, font(MONO, 12), 'center', 'rgba(255,255,255,' + a + ')');
+      }
+    }
+  };
+  Cam.prototype.start = function(){
+    if (!this.ready || this.running || REDUCED || this.fail) return;
+    this.running = true; var self = this;
+    this.t0 = performance.now() - (this.paused || 0) * 1000; this.last = 0;
+    var tick = function(now){
+      if (!self.running) return;
+      self.raf = requestAnimationFrame(tick);
+      if (now - self.last < 33) return; // ~30 fps, like a real IR sensor feed
+      self.last = now;
+      var t = ((now - self.t0) / 1000) % self.cfg.loop;
+      self.paused = t;
+      self.draw(t);
+    };
+    this.raf = requestAnimationFrame(tick);
+  };
+  Cam.prototype.stop = function(){ this.running = false; cancelAnimationFrame(this.raf); };
+
+  var cams = [].map.call(document.querySelectorAll('.fig canvas'), function(cv){ return new Cam(cv); });
+  var io = 'IntersectionObserver' in window ? new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      var cam = cams.filter(function(c){ return c.cv === en.target; })[0];
+      if (!cam) return;
+      cam.visible = en.isIntersecting;
+      if (en.isIntersecting){
+        if (!cam.started){ cam.started = true; cam.paused = 0; }
+        cam.start();
+      } else cam.stop();
+    });
+  }, { threshold: 0.25 }) : null;
+
+  cams.forEach(function(cam){
+    cam.init().then(function(){
+      if (io) io.observe(cam.cv); else cam.start();
+    }).catch(function(){});
+  });
+  window.__v1cams = cams;
+  var rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ cams.forEach(function(c){ if (c.ready){ c.resize(); c.draw(REDUCED ? c.staticTime() : (c.paused || 0)); } }); }, 120);
+  });
+})();
+</script>
+</body>
+</html>
